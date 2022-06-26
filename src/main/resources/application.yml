@@ -12,3 +12,7 @@ springdoc:
 logging:
   level:
     root: INFO
+
+ratio:
+  cash-balance: 3
+  monthly-revenue: 5

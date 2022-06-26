@@ -1,5 +1,7 @@
 package org.roy.trb.tst.credit.line.services;
 
+import java.util.UUID;
+import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.models.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.CreditLineResponse;
 
@@ -11,5 +13,6 @@ public interface ICreditLineService {
    * @param creditLineRequest DTO containing the request data
    * @return credit line request status. Either accepted or rejected
    */
-  CreditLineResponse validateCreditLine(CreditLineRequest creditLineRequest);
+  CreditLineResponse validateCreditLine(
+      UUID customerId, CreditLineRequest creditLineRequest, FoundingType foundingType);
 }

@@ -3,14 +3,12 @@ package org.roy.trb.tst.credit.line.models;
 import static lombok.AccessLevel.PRIVATE;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.math.BigDecimal;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -18,31 +16,26 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
-public class CreditLineRequest {
-  @NotNull
-  @Schema(required = true, description = "Type of founding")
-  FoundingType foundingType;
+public class CreditLineRequest implements Serializable {
+  private static final long serialVersionUID = 2L;
 
-  @NotNull
   @Schema(
       required = true,
       description = "The cash balance of the credit requester",
       example = "1000000.99")
-  BigDecimal cashBalance;
+  Float cashBalance;
 
-  @NotNull
   @Schema(
       required = true,
       description = "The monthly revenue of the credit requester",
       example = "150000.99")
-  BigDecimal monthlyRevenue;
+  Float monthlyRevenue;
 
-  @NotNull
   @Schema(
       required = true,
       description = "The amount of credit being requested",
       example = "10000.99")
-  BigDecimal requestedCreditLine;
+  Float requestedCreditLine;
 
   @DateTimeFormat(iso = ISO.TIME)
   @Schema(
