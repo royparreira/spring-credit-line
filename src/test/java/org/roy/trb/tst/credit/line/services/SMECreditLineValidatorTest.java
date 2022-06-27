@@ -2,9 +2,9 @@ package org.roy.trb.tst.credit.line.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -57,8 +57,7 @@ class SMECreditLineValidatorTest {
   void shouldAcceptSMECreditRequestBasedOnMonthlyRevenue() {
 
     // given
-    BigDecimal expectedAcceptedCreditLine =
-        BigDecimal.valueOf(SME_ACCEPTABLE_CREDIT_LINE).setScale(2, RoundingMode.HALF_UP);
+    BigDecimal expectedAcceptedCreditLine = roundFloatTwoPlaces(SME_ACCEPTABLE_CREDIT_LINE);
 
     RequesterFinancialData requesterFinancialData =
         RequesterFinancialData.builder()
@@ -67,11 +66,11 @@ class SMECreditLineValidatorTest {
             .build();
 
     // act
-    Optional<BigDecimal> rejectedCreditLineRequest =
+    Optional<BigDecimal> acceptedCreditLineRequest =
         mockedSmeCreditLineStrategy.getCreditLine(requesterFinancialData);
 
     // expect
-    assertTrue(rejectedCreditLineRequest.isPresent());
-    assertEquals(expectedAcceptedCreditLine, rejectedCreditLineRequest.get());
+    assertTrue(acceptedCreditLineRequest.isPresent());
+    assertEquals(expectedAcceptedCreditLine, acceptedCreditLineRequest.get());
   }
 }

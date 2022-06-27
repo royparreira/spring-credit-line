@@ -1,9 +1,9 @@
 package org.roy.trb.tst.credit.line.services.strategies;
 
 import static lombok.AccessLevel.PRIVATE;
+import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +22,7 @@ public class SMECreditLineValidator implements ICreditLineStrategy {
 
     boolean wasCreditRequestAccepted = financialData.getRequestedCredit() <= recommendedCreditLine;
 
-    BigDecimal acceptedCreditLine =
-        BigDecimal.valueOf(financialData.getRequestedCredit()).setScale(2, RoundingMode.HALF_UP);
+    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCredit());
 
     return wasCreditRequestAccepted ? Optional.of(acceptedCreditLine) : Optional.empty();
   }
