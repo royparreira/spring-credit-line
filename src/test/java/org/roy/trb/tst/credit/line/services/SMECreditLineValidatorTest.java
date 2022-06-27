@@ -2,6 +2,8 @@ package org.roy.trb.tst.credit.line.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_SME_MONTHLY_REVENUE;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
@@ -16,10 +18,6 @@ import org.roy.trb.tst.credit.line.services.strategies.SMECreditLineValidator;
 
 @ExtendWith(MockitoExtension.class)
 class SMECreditLineValidatorTest {
-
-  private static final Integer MONTHLY_REVENUE_RATIO = 5;
-
-  private static final Float MOCKED_SME_MONTHLY_REVENUE = 100_000.00F;
 
   private static final Float SME_ACCEPTABLE_CREDIT_LINE =
       (MOCKED_SME_MONTHLY_REVENUE / MONTHLY_REVENUE_RATIO) - 100F;

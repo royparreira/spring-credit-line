@@ -6,7 +6,6 @@ import static org.roy.trb.tst.credit.line.constants.Descriptions.CREDIT_LINE_REQ
 import static org.roy.trb.tst.credit.line.constants.Descriptions.INTERNAL_SERVER_ERROR_DESCRIPTION;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +24,11 @@ public interface CreditLineApi {
   ContractResponse<CreditLineResponse> validateCreditLine(
       @Valid CreditLineRequest creditLineRequest,
       @Parameter(
-              description = "Id of the customer asking for credit",
+              description = "Id of the customer asking for credit. (Filled in by Api Gateway)",
               example = "18eee9c2-f577-11ec-b939-0242ac120002",
               required = true)
           UUID customerId,
-      @Schema(required = true, description = "Customer request type of founding")
+      @Parameter(required = true, description = "Customer request type of founding")
           FoundingType foundingType,
       HttpServletRequest servlet);
 }

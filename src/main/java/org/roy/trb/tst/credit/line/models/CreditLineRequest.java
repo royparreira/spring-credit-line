@@ -3,7 +3,6 @@ package org.roy.trb.tst.credit.line.models;
 import static lombok.AccessLevel.PRIVATE;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
-public class CreditLineRequest implements Serializable {
-  private static final long serialVersionUID = 2L;
+public class CreditLineRequest {
 
   @Schema(
       required = true,
@@ -40,7 +38,8 @@ public class CreditLineRequest implements Serializable {
   @DateTimeFormat(iso = ISO.TIME)
   @Schema(
       required = true,
-      description = "Date of the credit line request. Must be in the ISO Time format",
+      description =
+          "Date of the credit line request. Must be in the ISO Time format. Filled in by api gateway",
       example = "2022-06-26T02:14:21.120Z")
   ZonedDateTime requestedDate;
 }

@@ -6,6 +6,7 @@ import static org.roy.trb.tst.credit.line.enums.FoundingType.STARTUP;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
@@ -28,13 +29,15 @@ public class CreditLineServiceImpl implements ICreditLineService {
 
   private final CreditLineRequestMapper mapper;
 
-  private ICreditLineStrategy creditLineStrategy;
-
+  @Setter
   @Value("${ratio.monthly-revenue}")
   private Integer monthlyRevenueRatio;
 
+  @Setter
   @Value("${ratio.cash-balance}")
   private Integer cashBalanceRatio;
+
+  private ICreditLineStrategy creditLineStrategy;
 
   /** {@inheritDoc} */
   @Override

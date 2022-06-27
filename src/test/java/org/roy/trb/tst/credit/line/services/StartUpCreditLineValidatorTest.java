@@ -2,6 +2,12 @@ package org.roy.trb.tst.credit.line.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_GREATER_CASH_BALANCE;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_GREATER_MONTHLY_REVENUE;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_SMALLER_CASH_BALANCE;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_SMALLER_MONTHLY_REVENUE;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
@@ -19,14 +25,6 @@ import org.roy.trb.tst.credit.line.services.strategies.StartUpCreditLineValidato
 
 @ExtendWith(MockitoExtension.class)
 class StartUpCreditLineValidatorTest {
-
-  private static final Integer MONTHLY_REVENUE_RATIO = 5;
-  private static final Integer CASH_BALANCE_RATIO = 3;
-
-  private static final Float MOCKED_START_UP_GREATER_MONTHLY_REVENUE = 150_000.00F;
-  private static final Float MOCKED_START_UP_SMALLER_MONTHLY_REVENUE = 15_000.00F;
-  private static final Float MOCKED_START_UP_GREATER_CASH_BALANCE = 150_000.00F;
-  private static final Float MOCKED_START_UP_SMALLER_CASH_BALANCE = 15_000.00F;
 
   private static ICreditLineStrategy mockedStartUpCreditLineStrategy;
 
