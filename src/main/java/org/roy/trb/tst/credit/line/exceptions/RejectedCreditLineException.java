@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.exception;
+package org.roy.trb.tst.credit.line.exceptions;
 
 import lombok.NoArgsConstructor;
 

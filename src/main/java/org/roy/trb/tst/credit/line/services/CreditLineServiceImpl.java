@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.exception.RejectedCreditLineException;
+import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.CreditLineResponse;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;

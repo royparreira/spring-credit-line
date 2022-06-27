@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.exception;
+package org.roy.trb.tst.credit.line.exceptions;
 
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
