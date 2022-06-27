@@ -2,6 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id "org.sonarqube" version "3.4.0.2513"
+    id 'jacoco'
 }
 
 group = 'org.roy'
@@ -13,7 +15,6 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
-
 repositories {
     mavenCentral()
 }
@@ -50,6 +51,58 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+    dependsOn test
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                minimum = 1.0
+            }
+            excludes = [
+                    'org.roy.trb.tst.credit.line.models.*',
+                    'org.roy.trb.tst.credit.line.enums.*',
+                    'org.roy.trb.tst.credit.line.constants.*',
+                    'org.roy.trb.tst.credit.line.configs.*',
+                    'org.roy.trb.tst.credit.line.services.mappers.*',
+                    'org.roy.trb.tst.credit.line.TrbTstCreditLineServiceApplication'
+            ]
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.coverage.exclusions',
+                '**/org/roy/trb/tst/credit/line/models/**, ' +
+                        '**/org/roy/trb/tst/credit/line/enums/**, ' +
+                        '**/org/roy/trb/tst/credit/line/constants/**, ' +
+                        '**/org/roy/trb/tst/credit/line/configs/**, ' +
+                        '**/org/roy/trb/tst/credit/line/services/mappers/**, ' +
+                        '**/org/roy/trb/tst/credit/line/TrbTstCreditLineServiceApplication.java'
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport
+    testLogging {
+        events "failed", "skipped", "passed"
+    }
+}
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.named('sonarqube').configure {
+    dependsOn jacocoTestReport
+    dependsOn jacocoTestCoverageVerification
 }

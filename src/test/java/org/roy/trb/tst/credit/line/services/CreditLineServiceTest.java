@@ -3,7 +3,7 @@ package org.roy.trb.tst.credit.line.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
-import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_CUSTOMER_ID;
+import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_UUID_CUSTOMER_ID;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeAcceptableRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeRejectableRequest;
@@ -12,7 +12,6 @@ import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockS
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,31 +32,19 @@ import org.roy.trb.tst.credit.line.utils.MathUtils;
 @ExtendWith(MockitoExtension.class)
 class CreditLineServiceTest {
 
-  private static CreditLineRequest acceptableSmeCreditLineRequest;
-  private static CreditLineRequest rejectableSmeCreditLineRequest;
-  private static CreditLineRequest acceptableStartUpCreditLineRequest;
-  private static CreditLineRequest rejectableStartUpCreditLineRequest;
   @InjectMocks private static CreditLineServiceImpl creditLineService;
   @Spy private CreditLineRequestMapper mapper = Mappers.getMapper(CreditLineRequestMapper.class);
 
-  @BeforeAll
-  static void setUpMocks() {
-    acceptableSmeCreditLineRequest = mockSmeAcceptableRequest();
-    rejectableSmeCreditLineRequest = mockSmeRejectableRequest();
-    acceptableStartUpCreditLineRequest = mockStartUpAcceptableRequest();
-    rejectableStartUpCreditLineRequest = mockStartURejectableRequest();
+  private static Stream<Arguments> getAcceptableCreditLineRequests() {
+    return Stream.of(
+        Arguments.of(mockSmeAcceptableRequest(), FoundingType.SME),
+        Arguments.of(mockStartUpAcceptableRequest(), FoundingType.STARTUP));
   }
 
-  private static Stream<Arguments> getAcceptableCreditLineTestCases() {
+  private static Stream<Arguments> getRejectableCreditLineRequests() {
     return Stream.of(
-        Arguments.of(acceptableSmeCreditLineRequest, FoundingType.SME),
-        Arguments.of(acceptableStartUpCreditLineRequest, FoundingType.STARTUP));
-  }
-
-  private static Stream<Arguments> getRejectableCreditLineTestCases() {
-    return Stream.of(
-        Arguments.of(rejectableSmeCreditLineRequest, FoundingType.SME),
-        Arguments.of(rejectableStartUpCreditLineRequest, FoundingType.STARTUP));
+        Arguments.of(mockSmeRejectableRequest(), FoundingType.SME),
+        Arguments.of(mockStartURejectableRequest(), FoundingType.STARTUP));
   }
 
   @BeforeEach
@@ -67,7 +54,7 @@ class CreditLineServiceTest {
   }
 
   @ParameterizedTest
-  @MethodSource("getAcceptableCreditLineTestCases")
+  @MethodSource("getAcceptableCreditLineRequests")
   void shouldAcceptCreditLineRequest(
       CreditLineRequest creditLineRequest, FoundingType foundingType) {
 
@@ -77,7 +64,8 @@ class CreditLineServiceTest {
 
     // act
     CreditLineResponse acceptedCreditLine =
-        creditLineService.validateCreditLine(MOCKED_CUSTOMER_ID, creditLineRequest, foundingType);
+        creditLineService.validateCreditLine(
+            MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
 
     // expect
     assertEquals(expectedAcceptedCreditLine, acceptedCreditLine.getApprovedCredit());
@@ -85,14 +73,15 @@ class CreditLineServiceTest {
   }
 
   @ParameterizedTest
-  @MethodSource("getRejectableCreditLineTestCases")
+  @MethodSource("getRejectableCreditLineRequests")
   void shouldRejectCreditLineRequest(
       CreditLineRequest creditLineRequest, FoundingType foundingType) {
 
     assertThrows(
         RejectedCreditLineException.class,
         () -> {
-          creditLineService.validateCreditLine(MOCKED_CUSTOMER_ID, creditLineRequest, foundingType);
+          creditLineService.validateCreditLine(
+              MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
         });
   }
 }

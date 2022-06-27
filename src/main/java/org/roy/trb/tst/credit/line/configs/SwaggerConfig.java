@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
   @Bean
-  public OpenAPI CreditLineOpenAPI() {
+  public OpenAPI creditLineOpenAPI() {
     return new OpenAPI()
         .info(
             new Info()

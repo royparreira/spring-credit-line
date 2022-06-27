@@ -13,7 +13,6 @@ import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.CreditLineResponse;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
 import org.roy.trb.tst.credit.line.services.strategies.ICreditLineStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.SMECreditLineValidator;
@@ -46,8 +45,7 @@ public class CreditLineServiceImpl implements ICreditLineService {
 
     setCreditLineRequestValidationStrategy(foundingType);
 
-    RequesterFinancialData requesterFinancialData =
-        mapper.mapToRequesterFinancialData(creditLineRequest);
+    var requesterFinancialData = mapper.mapToRequesterFinancialData(creditLineRequest);
 
     BigDecimal approvedCredit =
         creditLineStrategy
