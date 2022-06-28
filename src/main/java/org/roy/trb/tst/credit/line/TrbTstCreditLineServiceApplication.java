@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.service;
+package org.roy.trb.tst.credit.line;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
