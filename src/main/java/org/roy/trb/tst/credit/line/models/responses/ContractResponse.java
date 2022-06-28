@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.models;
+package org.roy.trb.tst.credit.line.models.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

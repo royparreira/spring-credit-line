@@ -21,4 +21,10 @@ public class Descriptions {
   /** Description for general internal server error */
   public static final String BAD_REQUEST_DESCRIPTION =
       "Bad request response, verify the request data";
+
+  /** Description for general not found error */
+  public static final String NOT_FOUND_DESCRIPTION = "Not Found response, verify the request data";
+
+  /** Message if there is more than three rejected credit lines requests for the same customerId */
+  public static final String SALES_AGENT_MSG = "A sales agent will contact you";
 }

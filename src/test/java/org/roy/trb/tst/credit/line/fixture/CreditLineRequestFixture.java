@@ -1,12 +1,10 @@
 package org.roy.trb.tst.credit.line.fixture;
 
-import java.time.ZoneId;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 import java.time.ZonedDateTime;
 import java.util.UUID;
-import java.util.stream.Stream;
-import org.junit.jupiter.params.provider.Arguments;
-import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.models.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
 
 public class CreditLineRequestFixture {
 
@@ -23,13 +21,12 @@ public class CreditLineRequestFixture {
   // SME
   public static final Float MOCKED_SME_MONTHLY_REVENUE = 100_000.00F;
   public static final Float MOCKED_SME_CASH_BALANCE = 100_000F;
-
-  // Common
-  public static final ZonedDateTime MOCKED_REQUESTED_DATE =
-      ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
-
   public static final String MOCKED_STRING_CUSTOMER_ID = "18eee9c2-f577-11ec-b939-0242ac120002";
   public static final UUID MOCKED_UUID_CUSTOMER_ID = UUID.fromString(MOCKED_STRING_CUSTOMER_ID);
+
+  public static final String MOCKED_STRING_REQUESTED_DATE = "2020-01-01T00:00:00Z";
+  public static final ZonedDateTime MOCKED_REQUESTED_DATE =
+      ZonedDateTime.parse(MOCKED_STRING_REQUESTED_DATE, ISO_DATE_TIME);
 
   public static CreditLineRequest mockSmeAcceptableRequest() {
 
@@ -81,17 +78,5 @@ public class CreditLineRequestFixture {
         .cashBalance(MOCKED_START_UP_SMALLER_CASH_BALANCE)
         .requestedDate(MOCKED_REQUESTED_DATE)
         .build();
-  }
-
-  public static Stream<Arguments> getAcceptableCreditLineTestCases() {
-    return Stream.of(
-        Arguments.of(mockSmeAcceptableRequest(), FoundingType.SME),
-        Arguments.of(mockStartUpAcceptableRequest(), FoundingType.STARTUP));
-  }
-
-  public static Stream<Arguments> getRejectableCreditLineTestCases() {
-    return Stream.of(
-        Arguments.of(mockSmeRejectableRequest(), FoundingType.SME),
-        Arguments.of(mockStartURejectableRequest(), FoundingType.STARTUP));
   }
 }

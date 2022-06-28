@@ -16,3 +16,22 @@ logging:
 ratio:
   cash-balance: 3
   monthly-revenue: 5
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credit-line-service-db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    testWhileIdle: true
+    validationQuery: SELECT 1
+
+  # Note these configurations are only for local environment
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true

@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.models;
+package org.roy.trb.tst.credit.line.models.responses;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -16,9 +16,11 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
 @JsonInclude(Include.NON_NULL)
-public class CreditLineResponse {
+public class CreditLineApiResponse {
 
   CreditLineStatus creditLineStatus;
 
-  BigDecimal approvedCredit;
+  BigDecimal acceptedCreditLine;
+
+  String message;
 }

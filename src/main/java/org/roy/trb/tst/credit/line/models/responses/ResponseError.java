@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.models;
+package org.roy.trb.tst.credit.line.models.responses;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

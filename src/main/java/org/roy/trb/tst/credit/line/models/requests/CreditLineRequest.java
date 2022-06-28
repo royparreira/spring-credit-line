@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.models;
+package org.roy.trb.tst.credit.line.models.requests;
 
 import static lombok.AccessLevel.PRIVATE;
 

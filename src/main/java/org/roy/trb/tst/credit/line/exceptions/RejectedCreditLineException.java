@@ -1,6 +1,16 @@
 package org.roy.trb.tst.credit.line.exceptions;
 
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@NoArgsConstructor
-public class RejectedCreditLineException extends RuntimeException {}
+public class RejectedCreditLineException extends RuntimeException {
+
+  @Getter private final String customMessage;
+
+  public RejectedCreditLineException(String customMessage) {
+    this.customMessage = customMessage;
+  }
+
+  public RejectedCreditLineException() {
+    customMessage = "";
+  }
+}
