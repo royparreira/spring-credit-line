@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.roy.trb.tst.credit.line.constants.Descriptions;
+import org.roy.trb.tst.credit.line.constants.Messages;
 import org.roy.trb.tst.credit.line.enums.ErrorType;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
@@ -69,25 +70,25 @@ public class CommonExceptionHandler {
   }
 
   @ResponseBody
-  @ExceptionHandler({NotFoundException.class})
+  @ExceptionHandler({TooManyRequestsException.class})
   public ResponseEntity<ContractResponse<Void>> handleNotFoundExceptions(
-      HttpServletRequest request, NotFoundException exception) {
+      HttpServletRequest request, TooManyRequestsException exception) {
 
-    log.warn("Not found: {}", exception.getMessage());
+    log.warn("Too many requests: {}", Messages.TOO_MANY_REQUESTS_MSG);
 
     var contractResponse =
         ContractResponse.<Void>builder()
             .error(
                 ResponseError.builder()
-                    .errorCode(HttpStatus.NOT_FOUND)
-                    .errorType(ErrorType.DATA_NOT_FOUND)
-                    .errorMessage(Descriptions.NOT_FOUND_DESCRIPTION)
+                    .errorCode(HttpStatus.TOO_MANY_REQUESTS)
+                    .errorType(ErrorType.EXCEED_API_QUOTA)
+                    .errorMessage(Messages.TOO_MANY_REQUESTS_MSG)
                     .build())
             .path(request.getServletPath())
             .build();
 
     return new ResponseEntity<>(
-        contractResponse, getProducesJsonHttpHeader(), HttpStatus.NOT_FOUND);
+        contractResponse, getProducesJsonHttpHeader(), HttpStatus.TOO_MANY_REQUESTS);
   }
 
   @ExceptionHandler(Exception.class)
@@ -95,7 +96,29 @@ public class CommonExceptionHandler {
   public ResponseEntity<ContractResponse<Void>> handleException(
       HttpServletRequest request, Exception exception) {
 
-    log.error("Unhandled exception: {} ", ExceptionUtils.getStackTrace(exception), exception);
+    log.error("Unhandled exception: {} ", ExceptionUtils.getStackTrace(exception));
+
+    var contractResponse =
+        ContractResponse.<Void>builder()
+            .error(
+                ResponseError.builder()
+                    .errorCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .errorType(ErrorType.UNKNOWN_ERROR)
+                    .errorMessage(Descriptions.INTERNAL_SERVER_ERROR_DESCRIPTION)
+                    .build())
+            .path(request.getServletPath())
+            .build();
+
+    return new ResponseEntity<>(
+        contractResponse, getProducesJsonHttpHeader(), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(InternalServerErrorException.class)
+  @ResponseBody
+  public ResponseEntity<ContractResponse<Void>> handleException(
+      HttpServletRequest request, InternalServerErrorException exception) {
+
+    log.error(exception.getMessage() + ": {}", ExceptionUtils.getStackTrace(exception));
 
     var contractResponse =
         ContractResponse.<Void>builder()

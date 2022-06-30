@@ -38,8 +38,7 @@ public class CreditLineRequest {
   @DateTimeFormat(iso = ISO.TIME)
   @Schema(
       required = true,
-      description =
-          "Date of the credit line request. Must be in the ISO Time format. Filled in by api gateway",
+      description = "Date of the credit line request. Must be in the ISO Time format.",
       example = "2022-06-26T02:14:21.120Z")
   ZonedDateTime requestedDate;
 }
