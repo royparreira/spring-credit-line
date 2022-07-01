@@ -1,13 +1,14 @@
 package org.roy.trb.tst.credit.line.services;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static org.roy.trb.tst.credit.line.constants.Descriptions.SALES_AGENT_MSG;
+import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
+import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.ACCEPTED;
+import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyAcceptedRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyRejectedRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
@@ -35,9 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.exceptions.NotFoundException;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
@@ -95,7 +94,7 @@ class CreditLineServiceTest {
 
     // expect
     assertEquals(expectedAcceptedCreditLine, acceptedCreditLine.getAcceptedCreditLine());
-    assertEquals(CreditLineStatus.ACCEPTED, acceptedCreditLine.getCreditLineStatus());
+    assertEquals(ACCEPTED, acceptedCreditLine.getCreditLineStatus());
   }
 
   @ParameterizedTest
@@ -130,7 +129,7 @@ class CreditLineServiceTest {
         creditLineService.validateCreditLine(
             MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
 
-    assertEquals(CreditLineStatus.ACCEPTED, creditLineApiResponse.getCreditLineStatus());
+    assertEquals(ACCEPTED, creditLineApiResponse.getCreditLineStatus());
     assertEquals(new BigDecimal("10000.00"), creditLineApiResponse.getAcceptedCreditLine());
   }
 
@@ -148,7 +147,7 @@ class CreditLineServiceTest {
         creditLineService.validateCreditLine(
             MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
 
-    assertEquals(CreditLineStatus.ACCEPTED, creditLineApiResponse.getCreditLineStatus());
+    assertEquals(ACCEPTED, creditLineApiResponse.getCreditLineStatus());
   }
 
   // Reject already rejected - more than maximum allowed
@@ -198,27 +197,19 @@ class CreditLineServiceTest {
   }
 
   @Test
-  void shouldSuccessfullyGetExistentCreditLineRecord() {
-    // given
+  void shouldSuccessfullyGetCustomerCreditLineStatusByIdExistentUser() {
+
     when(creditLineRequestsRepository.findById(any(UUID.class)))
-        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
+        .thenReturn(mockAlreadyAcceptedRequest());
 
-    // act
-    creditLineService.getCustomerCreditLine(MOCKED_UUID_CUSTOMER_ID);
-
-    // expect
-    assertDoesNotThrow(NotFoundException::new);
+    assertEquals(ACCEPTED, creditLineService.getCustomerCreditLineStatus(MOCKED_UUID_CUSTOMER_ID));
   }
 
   @Test
-  void shouldFailGetNonExistentCreditLineRecord() {
+  void shouldSuccessfullyGetCustomerCreditLineStatusByIdNewUser() {
 
-    // given
-    when(creditLineRequestsRepository.findById(any(UUID.class))).thenThrow(new NotFoundException());
+    when(creditLineRequestsRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-    // act and expect
-    assertThrows(
-        NotFoundException.class,
-        () -> creditLineService.getCustomerCreditLine(MOCKED_UUID_CUSTOMER_ID));
+    assertEquals(REJECTED, creditLineService.getCustomerCreditLineStatus(MOCKED_UUID_CUSTOMER_ID));
   }
 }

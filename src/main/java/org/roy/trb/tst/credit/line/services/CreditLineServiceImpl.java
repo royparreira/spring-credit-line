@@ -1,11 +1,13 @@
 package org.roy.trb.tst.credit.line.services;
 
-import static org.roy.trb.tst.credit.line.constants.Descriptions.SALES_AGENT_MSG;
+import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.SME;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.STARTUP;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +17,6 @@ import lombok.extern.log4j.Log4j2;
 import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecords;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.exceptions.NotFoundException;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
@@ -33,10 +34,12 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CreditLineServiceImpl implements ICreditLineService {
+public class CreditLineServiceImpl implements CreditLineService {
 
   public static final Integer MAX_NUMBER_OF_FAILED_ATTEMPTS = 3;
+
   private final CreditLineRequestMapper mapper;
+
   private final CreditLineRequestRepository creditLineRequestsRepository;
 
   @Setter
@@ -53,6 +56,8 @@ public class CreditLineServiceImpl implements ICreditLineService {
   @Override
   public CreditLineApiResponse validateCreditLine(
       UUID customerId, CreditLineRequest creditLineRequest, FoundingType foundingType) {
+
+    creditLineRequest.setRequestedDate(Instant.now().atZone(ZoneOffset.UTC));
 
     var requesterFinancialData = mapper.mapToRequesterFinancialData(creditLineRequest);
 
@@ -131,15 +136,6 @@ public class CreditLineServiceImpl implements ICreditLineService {
     return existentCreditLineResponse;
   }
 
-  @Override
-  public CreditLineStatusResponse getCustomerCreditLine(UUID customerId) {
-
-    CreditLineRequestRecords entity =
-        creditLineRequestsRepository.findById(customerId).orElseThrow(NotFoundException::new);
-
-    return mapper.mapToCreditLineStatusResponse(entity);
-  }
-
   /**
    * Set up the credit line validation logic based on the Strategy design pattern. Select the
    * strategy based on the founding type
@@ -182,5 +178,16 @@ public class CreditLineServiceImpl implements ICreditLineService {
 
   private CreditLineStatus getCreditLineStatus(BigDecimal approvedCredit) {
     return approvedCredit.equals(BigDecimal.ZERO) ? REJECTED : CreditLineStatus.ACCEPTED;
+  }
+
+  @Override
+  public CreditLineStatus getCustomerCreditLineStatus(UUID customerId) {
+
+    CreditLineRequestRecords entity =
+        creditLineRequestsRepository
+            .findById(customerId)
+            .orElse(CreditLineRequestRecords.builder().creditLineStatus(REJECTED.name()).build());
+
+    return CreditLineStatus.valueOf(entity.getCreditLineStatus());
   }
 }

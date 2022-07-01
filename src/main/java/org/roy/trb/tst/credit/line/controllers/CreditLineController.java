@@ -1,5 +1,7 @@
 package org.roy.trb.tst.credit.line.controllers;
 
+import static org.roy.trb.tst.credit.line.constants.ApiParameterNames.CUSTOMER_ID_HEADER;
+import static org.roy.trb.tst.credit.line.constants.ApiParameterNames.FOUNDING_TYPE_HEADER;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.UUID;
@@ -12,13 +14,11 @@ import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
-import org.roy.trb.tst.credit.line.services.ICreditLineService;
+import org.roy.trb.tst.credit.line.services.CreditLineService;
+import org.roy.trb.tst.credit.line.services.RateLimiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CreditLineController implements CreditLineApi {
 
-  private final ICreditLineService creditLineService;
+  private final CreditLineService creditLineService;
+
+  private final RateLimiterService rateLimiterService;
 
   @Override
   @PostMapping(
@@ -43,30 +45,19 @@ public class CreditLineController implements CreditLineApi {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public ContractResponse<CreditLineApiResponse> validateCreditLine(
       @Valid @RequestBody CreditLineRequest creditLineRequest,
-      @RequestHeader(value = "customerId") UUID customerId,
-      @RequestHeader(value = "foundingType") FoundingType foundingType,
+      @RequestHeader(value = CUSTOMER_ID_HEADER) UUID customerId,
+      @RequestHeader(value = FOUNDING_TYPE_HEADER) FoundingType foundingType,
       HttpServletRequest servlet) {
 
     log.traceEntry(
         "Initializing credit line request validation. Request {}", creditLineRequest.toString());
 
+    rateLimiterService.checkRateLimit(customerId);
+
     return log.traceExit(
         ContractResponse.<CreditLineApiResponse>builder()
             .response(
                 creditLineService.validateCreditLine(customerId, creditLineRequest, foundingType))
-            .path(servlet.getServletPath())
-            .build());
-  }
-
-  @GetMapping(path = "/status/{customerId}", produces = APPLICATION_JSON_VALUE)
-  @ResponseStatus(HttpStatus.OK)
-  public ContractResponse<CreditLineStatusResponse> getCreditLineStatusById(
-      @PathVariable(value = "customerId") UUID customerId, HttpServletRequest servlet) {
-    log.traceEntry("Checking existent creditLineRequests for customerId: {}", customerId);
-
-    return log.traceExit(
-        ContractResponse.<CreditLineStatusResponse>builder()
-            .response(creditLineService.getCustomerCreditLine(customerId))
             .path(servlet.getServletPath())
             .build());
   }
