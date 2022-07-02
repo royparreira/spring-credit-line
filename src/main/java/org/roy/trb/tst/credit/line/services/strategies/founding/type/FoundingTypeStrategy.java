@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.services.strategies;
+package org.roy.trb.tst.credit.line.services.strategies.founding.type;
 
 import java.math.BigDecimal;
 import java.util.Optional;

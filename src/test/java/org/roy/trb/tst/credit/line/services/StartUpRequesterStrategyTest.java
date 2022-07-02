@@ -20,8 +20,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.services.strategies.FoundingTypeStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.StartUpRequesterStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.founding.type.FoundingTypeStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.founding.type.StartUpRequesterStrategy;
 
 @ExtendWith(MockitoExtension.class)
 class StartUpRequesterStrategyTest {
