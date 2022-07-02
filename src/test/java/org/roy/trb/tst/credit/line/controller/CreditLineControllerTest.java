@@ -23,8 +23,8 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.exceptions.TooManyRequestsException;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
 import org.roy.trb.tst.credit.line.services.RateLimiterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -41,8 +43,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @WebMvcTest(controllers = CreditLineController.class)
 class CreditLineControllerTest {
 
+  public static final String MOCK_MSG = "MOCK";
   private static final String APPROVED_CREDIT_LINE = "10000";
-
   @MockBean private CreditLineService creditLineService;
   @MockBean private RateLimiterService rateLimiterService;
 
@@ -53,9 +55,10 @@ class CreditLineControllerTest {
   void shouldAcceptCreditLineRequest() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.requestCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenReturn(
-            CreditLineApiResponse.builder()
+            PostRequestCreditLineResponseBody.builder()
                 .creditLineStatus(CreditLineStatus.ACCEPTED)
                 .acceptedCreditLine(new BigDecimal(APPROVED_CREDIT_LINE))
                 .build());
@@ -76,7 +79,8 @@ class CreditLineControllerTest {
   void shouldRejectCreditNewLineRequest() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.requestCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException());
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
@@ -96,7 +100,8 @@ class CreditLineControllerTest {
   void shouldRejectCreditLineRequestMoreThanThreeFails() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.requestCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException(SALES_AGENT_MSG));
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
@@ -150,7 +155,8 @@ class CreditLineControllerTest {
   void shouldResponseInternalServerErrorForGeneralExceptions() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.requestCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RuntimeException());
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
@@ -182,6 +188,20 @@ class CreditLineControllerTest {
     assertErrorResponse(mockMvc.perform(builder).andExpect(status().isInternalServerError()));
   }
 
+  @Test
+  void shouldRespondBadRequestWhenHttpMessageNotReadableExceptionIsThrown() throws Exception {
+
+    doThrow(
+            new HttpMessageNotReadableException(
+                MOCK_MSG, new MockHttpInputMessage(MOCK_MSG.getBytes())))
+        .when(rateLimiterService)
+        .checkRateLimit(any(UUID.class));
+
+    MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
+
+    assertErrorResponse(mockMvc.perform(builder).andExpect(status().isBadRequest()));
+  }
+
   private MockHttpServletRequestBuilder getStartUpRequestTemplate() throws JsonProcessingException {
     return getBasePostHttpRequestBuilder()
         .headers(
@@ -196,7 +216,7 @@ class CreditLineControllerTest {
 
   private MockHttpServletRequestBuilder getBasePostHttpRequestBuilder() {
 
-    String uri = "v1/" + REQUEST_CREDIT_LINE_ENDPOINT;
+    String uri = "/v1" + REQUEST_CREDIT_LINE_ENDPOINT;
 
     return post(uri).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
   }

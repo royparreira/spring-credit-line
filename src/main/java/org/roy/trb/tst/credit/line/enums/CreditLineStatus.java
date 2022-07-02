@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 public enum CreditLineStatus {
   ACCEPTED(Bandwidth.classic(2, Refill.smooth(2, Duration.ofMinutes(2)))),
 
-  REJECTED(Bandwidth.classic(1, Refill.smooth(1, Duration.ofSeconds(30))));
+  REJECTED(Bandwidth.classic(1, Refill.smooth(1, Duration.ofSeconds(30)))),
+
+  NONE(null);
 
   @Getter private final Bandwidth limit;
 }

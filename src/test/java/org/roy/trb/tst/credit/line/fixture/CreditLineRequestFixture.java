@@ -4,7 +4,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 
 public class CreditLineRequestFixture {
 
@@ -28,52 +28,56 @@ public class CreditLineRequestFixture {
   public static final ZonedDateTime MOCKED_REQUESTED_DATE =
       ZonedDateTime.parse(MOCKED_STRING_REQUESTED_DATE, ISO_DATE_TIME);
 
-  public static CreditLineRequest mockSmeAcceptableRequest() {
+  public static PostRequestCreditLineRequestBody mockSmeAcceptableRequest() {
 
     Float acceptableCreditValue = MOCKED_SME_MONTHLY_REVENUE / MONTHLY_REVENUE_RATIO;
-    CreditLineRequest creditLineRequest = getBaseSmeCreditLineRequest();
-    creditLineRequest.setRequestedCreditLine(acceptableCreditValue);
+    PostRequestCreditLineRequestBody postRequestCreditLineRequestBody =
+        getBaseSmeCreditLineRequest();
+    postRequestCreditLineRequestBody.setRequestedCreditLine(acceptableCreditValue);
 
-    return creditLineRequest;
+    return postRequestCreditLineRequestBody;
   }
 
-  public static CreditLineRequest mockSmeRejectableRequest() {
+  public static PostRequestCreditLineRequestBody mockSmeRejectableRequest() {
 
     Float rejectableCreditValue = MOCKED_SME_MONTHLY_REVENUE / MONTHLY_REVENUE_RATIO + 100F;
-    CreditLineRequest creditLineRequest = getBaseSmeCreditLineRequest();
-    creditLineRequest.setRequestedCreditLine(rejectableCreditValue);
+    PostRequestCreditLineRequestBody postRequestCreditLineRequestBody =
+        getBaseSmeCreditLineRequest();
+    postRequestCreditLineRequestBody.setRequestedCreditLine(rejectableCreditValue);
 
-    return creditLineRequest;
+    return postRequestCreditLineRequestBody;
   }
 
-  public static CreditLineRequest mockStartUpAcceptableRequest() {
+  public static PostRequestCreditLineRequestBody mockStartUpAcceptableRequest() {
 
     Float acceptableCreditValue = MOCKED_START_UP_SMALLER_CASH_BALANCE / CASH_BALANCE_RATIO;
-    CreditLineRequest creditLineRequest = getBaseStartUpCreditLineRequest();
-    creditLineRequest.setRequestedCreditLine(acceptableCreditValue);
+    PostRequestCreditLineRequestBody postRequestCreditLineRequestBody =
+        getBaseStartUpCreditLineRequest();
+    postRequestCreditLineRequestBody.setRequestedCreditLine(acceptableCreditValue);
 
-    return creditLineRequest;
+    return postRequestCreditLineRequestBody;
   }
 
-  public static CreditLineRequest mockStartURejectableRequest() {
+  public static PostRequestCreditLineRequestBody mockStartURejectableRequest() {
 
     Float rejectableCreditValue = MOCKED_START_UP_SMALLER_CASH_BALANCE / CASH_BALANCE_RATIO + 100F;
-    CreditLineRequest creditLineRequest = getBaseStartUpCreditLineRequest();
-    creditLineRequest.setRequestedCreditLine(rejectableCreditValue);
+    PostRequestCreditLineRequestBody postRequestCreditLineRequestBody =
+        getBaseStartUpCreditLineRequest();
+    postRequestCreditLineRequestBody.setRequestedCreditLine(rejectableCreditValue);
 
-    return creditLineRequest;
+    return postRequestCreditLineRequestBody;
   }
 
-  private static CreditLineRequest getBaseSmeCreditLineRequest() {
-    return CreditLineRequest.builder()
+  private static PostRequestCreditLineRequestBody getBaseSmeCreditLineRequest() {
+    return PostRequestCreditLineRequestBody.builder()
         .monthlyRevenue(MOCKED_SME_MONTHLY_REVENUE)
         .cashBalance(MOCKED_SME_CASH_BALANCE)
         .requestedDate(MOCKED_REQUESTED_DATE)
         .build();
   }
 
-  private static CreditLineRequest getBaseStartUpCreditLineRequest() {
-    return CreditLineRequest.builder()
+  private static PostRequestCreditLineRequestBody getBaseStartUpCreditLineRequest() {
+    return PostRequestCreditLineRequestBody.builder()
         .monthlyRevenue(MOCKED_START_UP_SMALLER_MONTHLY_REVENUE)
         .cashBalance(MOCKED_START_UP_SMALLER_CASH_BALANCE)
         .requestedDate(MOCKED_REQUESTED_DATE)

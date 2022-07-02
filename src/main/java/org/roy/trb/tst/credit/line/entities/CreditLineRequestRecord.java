@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CREDIT_LINE_REQUESTS")
-public class CreditLineRequestRecords {
+public class CreditLineRequestRecord {
 
   @Id
   @Column(unique = true, nullable = false)

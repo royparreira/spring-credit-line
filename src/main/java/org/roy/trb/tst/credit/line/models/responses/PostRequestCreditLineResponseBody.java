@@ -2,9 +2,9 @@ package org.roy.trb.tst.credit.line.models.responses;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,15 +15,12 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
-public class CreditLineStatusResponse {
+@JsonInclude(Include.NON_NULL)
+public class PostRequestCreditLineResponseBody {
 
-  private UUID customerId;
+  CreditLineStatus creditLineStatus;
 
-  private BigDecimal acceptedCreditLine;
+  BigDecimal acceptedCreditLine;
 
-  private CreditLineStatus creditLineStatus;
-
-  private ZonedDateTime requestedDate;
-
-  private Integer attempts;
+  String message;
 }

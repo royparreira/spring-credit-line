@@ -12,9 +12,9 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 
 public interface CreditLineApi {
 
@@ -23,8 +23,8 @@ public interface CreditLineApi {
   @ApiResponse(responseCode = "400", description = BAD_REQUEST_DESCRIPTION)
   @ApiResponse(responseCode = "429", description = TOO_MANY_REQUESTS_DESCRIPTION)
   @ApiResponse(responseCode = "500", description = INTERNAL_SERVER_ERROR_DESCRIPTION)
-  ContractResponse<CreditLineApiResponse> validateCreditLine(
-      @Valid CreditLineRequest creditLineRequest,
+  ContractResponse<PostRequestCreditLineResponseBody> requestCreditLine(
+      @Valid PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       @Parameter(
               description = "Id of the customer asking for credit.",
               example = "18eee9c2-f577-11ec-b939-0242ac120002",

@@ -6,26 +6,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.ACCEPTED;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyAcceptedRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyRejectedRequest;
-import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_UUID_CUSTOMER_ID;
-import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeAcceptableRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeRejectableRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockStartURejectableRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockStartUpAcceptableRequest;
-import static org.roy.trb.tst.credit.line.services.CreditLineServiceImpl.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,8 +35,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
 
@@ -68,29 +65,24 @@ class CreditLineServiceTest {
     return Stream.concat(getAcceptableCreditLineRequests(), getRejectableCreditLineRequests());
   }
 
-  @BeforeEach
-  void setUpIndividualMocks() {
-    creditLineService.setCashBalanceRatio(CASH_BALANCE_RATIO);
-    creditLineService.setMonthlyRevenueRatio(MONTHLY_REVENUE_RATIO);
-  }
-
   @ParameterizedTest
   @MethodSource("getAcceptableCreditLineRequests")
   void shouldAcceptNewCreditLineRequest(
-      CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
 
     // given
     BigDecimal expectedAcceptedCreditLine =
-        roundFloatTwoPlaces(creditLineRequest.getRequestedCreditLine());
+        roundFloatTwoPlaces(postRequestCreditLineRequestBody.getRequestedCreditLine());
 
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(Optional.empty());
 
     // act
-    CreditLineApiResponse acceptedCreditLine =
-        creditLineService.validateCreditLine(
-            MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
+    PostRequestCreditLineResponseBody acceptedCreditLine =
+        creditLineService.requestCreditLine(
+            MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
     // expect
     assertEquals(expectedAcceptedCreditLine, acceptedCreditLine.getAcceptedCreditLine());
@@ -100,7 +92,8 @@ class CreditLineServiceTest {
   @ParameterizedTest
   @MethodSource("getRejectableCreditLineRequests")
   void shouldRejectNewCreditLineRequest(
-      CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
 
     // given
     lenient()
@@ -111,63 +104,67 @@ class CreditLineServiceTest {
     assertThrows(
         RejectedCreditLineException.class,
         () ->
-            creditLineService.validateCreditLine(
-                MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType));
+            creditLineService.requestCreditLine(
+                MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType));
   }
 
   // Accept already accepted
   @ParameterizedTest
   @MethodSource("getMixCreditLineRequests")
   void shouldAcceptAlreadyAcceptedCreditLineRequestWithSameValuesRegardlessTheInput(
-      CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
     // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyAcceptedRequest());
 
-    CreditLineApiResponse creditLineApiResponse =
-        creditLineService.validateCreditLine(
-            MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
+    PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
+        creditLineService.requestCreditLine(
+            MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
-    assertEquals(ACCEPTED, creditLineApiResponse.getCreditLineStatus());
-    assertEquals(new BigDecimal("10000.00"), creditLineApiResponse.getAcceptedCreditLine());
+    assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
+    assertEquals(
+        new BigDecimal("10000.00"), postRequestCreditLineResponseBody.getAcceptedCreditLine());
   }
 
   // Accept already rejected - less than more than maximum allowed
   @ParameterizedTest
   @MethodSource("getAcceptableCreditLineRequests")
   void shouldAcceptAlreadyRejectedCreditLineRequestIfNotRejectedMoreThanMaximumAllowed(
-      CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
 
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
 
-    CreditLineApiResponse creditLineApiResponse =
-        creditLineService.validateCreditLine(
-            MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
+    PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
+        creditLineService.requestCreditLine(
+            MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
-    assertEquals(ACCEPTED, creditLineApiResponse.getCreditLineStatus());
+    assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
   }
 
   // Reject already rejected - more than maximum allowed
   @ParameterizedTest
-  @MethodSource("getMixCreditLineRequests")
+  @MethodSource("getRejectableCreditLineRequests")
   void shouldRejectAlreadyRejectedCreditLineRequestIfRejectedMoreThanMaximumAllowed(
-      CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
 
     // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
-        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS + 1));
+        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
 
     // act
     RejectedCreditLineException exception =
         assertThrows(
             RejectedCreditLineException.class,
             () ->
-                creditLineService.validateCreditLine(
-                    MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType));
+                creditLineService.requestCreditLine(
+                    MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType));
 
     // expect
     assertEquals(SALES_AGENT_MSG, exception.getCustomMessage());
@@ -177,20 +174,21 @@ class CreditLineServiceTest {
   @ParameterizedTest
   @MethodSource("getRejectableCreditLineRequests")
   void shouldRejectAlreadyRejectedCreditLineRequestWithCustomMessageMoreThanThreeFailures(
-      CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
 
     // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
-        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
+        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS - 1));
 
     // act
     RejectedCreditLineException exception =
         assertThrows(
             RejectedCreditLineException.class,
             () ->
-                creditLineService.validateCreditLine(
-                    MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType));
+                creditLineService.requestCreditLine(
+                    MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType));
 
     // expect
     assertTrue(exception.getCustomMessage().isEmpty());

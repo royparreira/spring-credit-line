@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
-public class CreditLineRequest {
+public class PostRequestCreditLineRequestBody {
 
   @Schema(
       required = true,

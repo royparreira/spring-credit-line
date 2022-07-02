@@ -1,7 +1,6 @@
 package org.roy.trb.tst.credit.line.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_GREATER_CASH_BALANCE;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_GREATER_MONTHLY_REVENUE;
@@ -11,7 +10,6 @@ import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTH
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,20 +17,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.services.strategies.ICreditLineStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.StartUpCreditLineValidator;
+import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
+import org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.founding.type.StartUpRequesterStrategy;
 
 @ExtendWith(MockitoExtension.class)
-class StartUpCreditLineValidatorTest {
+class StartUpRequesterStrategyTest {
 
-  private static ICreditLineStrategy mockedStartUpCreditLineStrategy;
+  private static CreditLineCalculationStrategy mockedStartUpCreditLineStrategy;
 
   @BeforeAll
   static void setUpMocks() {
 
     mockedStartUpCreditLineStrategy =
-        StartUpCreditLineValidator.builder()
+        StartUpRequesterStrategy.builder()
             .monthlyRevenueRatio(MONTHLY_REVENUE_RATIO)
             .cashBalanceRatio(CASH_BALANCE_RATIO)
             .build();
@@ -78,17 +76,17 @@ class StartUpCreditLineValidatorTest {
     // given
     RequesterFinancialData requesterFinancialData =
         RequesterFinancialData.builder()
-            .requestedCredit(requestedCredit)
+            .requestedCreditLine(requestedCredit)
             .monthlyRevenue(monthlyRevenue)
             .cashBalance(cashBalance)
             .build();
 
     // act
-    Optional<BigDecimal> rejectedCreditLineRequest =
+    BigDecimal rejectedCreditLineRequest =
         mockedStartUpCreditLineStrategy.getCreditLine(requesterFinancialData);
 
     // expect
-    assertTrue(rejectedCreditLineRequest.isEmpty());
+    assertEquals(BigDecimal.ZERO, rejectedCreditLineRequest);
   }
 
   @ParameterizedTest
@@ -101,17 +99,16 @@ class StartUpCreditLineValidatorTest {
 
     RequesterFinancialData requesterFinancialData =
         RequesterFinancialData.builder()
-            .requestedCredit(requestedCredit)
+            .requestedCreditLine(requestedCredit)
             .monthlyRevenue(monthlyRevenue)
             .cashBalance(cashBalance)
             .build();
 
     // act
-    Optional<BigDecimal> acceptedCreditLineRequest =
+    BigDecimal acceptedCreditLineRequest =
         mockedStartUpCreditLineStrategy.getCreditLine(requesterFinancialData);
 
     // expect
-    assertTrue(acceptedCreditLineRequest.isPresent());
-    assertEquals(expectedAcceptedCreditLine, acceptedCreditLineRequest.get());
+    assertEquals(expectedAcceptedCreditLine, acceptedCreditLineRequest);
   }
 }

@@ -28,4 +28,7 @@ public class Descriptions {
   /** Description for too many requests error */
   public static final String TOO_MANY_REQUESTS_DESCRIPTION =
       "Too many requests.Y ou have reached your api calls limit";
+
+  public static final String MISMATCH_REQUEST_DESCRIPTION =
+      "Make sure the request headers, parameters and body are properly formatted";
 }

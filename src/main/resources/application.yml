@@ -16,6 +16,7 @@ logging:
 ratio:
   cash-balance: 3
   monthly-revenue: 5
+  max-failed-attempts: 3
 
 spring:
   datasource:

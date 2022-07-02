@@ -1,23 +1,22 @@
-package org.roy.trb.tst.credit.line.services.strategies;
+package org.roy.trb.tst.credit.line.services.strategies.founding.type;
 
 import static lombok.AccessLevel.PRIVATE;
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
+import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class StartUpCreditLineValidator implements ICreditLineStrategy {
+public class StartUpRequesterStrategy implements CreditLineCalculationStrategy {
 
   private final Integer monthlyRevenueRatio;
   private final Integer cashBalanceRatio;
 
   @Override
-  public Optional<BigDecimal> getCreditLine(RequesterFinancialData financialData) {
+  public BigDecimal getCreditLine(RequesterFinancialData financialData) {
 
     float monthlyRevenueRecommendedCreditLine =
         financialData.getMonthlyRevenue() / monthlyRevenueRatio;
@@ -28,10 +27,10 @@ public class StartUpCreditLineValidator implements ICreditLineStrategy {
         Math.max(monthlyRevenueRecommendedCreditLine, cashBalanceRecommendedCreditLine);
 
     boolean wasCreditRequestAccepted =
-        financialData.getRequestedCredit() <= overAllRecommendedCreditLine;
+        financialData.getRequestedCreditLine() <= overAllRecommendedCreditLine;
 
-    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCredit());
+    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCreditLine());
 
-    return wasCreditRequestAccepted ? Optional.of(acceptedCreditLine) : Optional.empty();
+    return wasCreditRequestAccepted ? acceptedCreditLine : BigDecimal.ZERO;
   }
 }
