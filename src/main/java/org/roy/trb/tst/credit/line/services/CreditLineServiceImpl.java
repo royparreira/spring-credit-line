@@ -24,9 +24,9 @@ import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
-import org.roy.trb.tst.credit.line.services.strategies.ICreditLineStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.SMECreditLineValidator;
-import org.roy.trb.tst.credit.line.services.strategies.StartUpCreditLineValidator;
+import org.roy.trb.tst.credit.line.services.strategies.FoundingTypeStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.SmeRequesterStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.StartUpRequesterStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class CreditLineServiceImpl implements CreditLineService {
   @Value("${ratio.cash-balance}")
   private Integer cashBalanceRatio;
 
-  private ICreditLineStrategy creditLineStrategy;
+  private FoundingTypeStrategy creditLineStrategy;
 
   /** {@inheritDoc} */
   @Override
@@ -146,12 +146,12 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     if (SME.equals(foundingType)) {
       creditLineStrategy =
-          SMECreditLineValidator.builder().monthlyRevenueRatio(monthlyRevenueRatio).build();
+          SmeRequesterStrategy.builder().monthlyRevenueRatio(monthlyRevenueRatio).build();
     }
 
     if (STARTUP.equals(foundingType)) {
       creditLineStrategy =
-          StartUpCreditLineValidator.builder()
+          StartUpRequesterStrategy.builder()
               .cashBalanceRatio(cashBalanceRatio)
               .monthlyRevenueRatio(monthlyRevenueRatio)
               .build();

@@ -20,19 +20,19 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.services.strategies.ICreditLineStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.StartUpCreditLineValidator;
+import org.roy.trb.tst.credit.line.services.strategies.FoundingTypeStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.StartUpRequesterStrategy;
 
 @ExtendWith(MockitoExtension.class)
-class StartUpCreditLineValidatorTest {
+class StartUpRequesterStrategyTest {
 
-  private static ICreditLineStrategy mockedStartUpCreditLineStrategy;
+  private static FoundingTypeStrategy mockedStartUpCreditLineStrategy;
 
   @BeforeAll
   static void setUpMocks() {
 
     mockedStartUpCreditLineStrategy =
-        StartUpCreditLineValidator.builder()
+        StartUpRequesterStrategy.builder()
             .monthlyRevenueRatio(MONTHLY_REVENUE_RATIO)
             .cashBalanceRatio(CASH_BALANCE_RATIO)
             .build();

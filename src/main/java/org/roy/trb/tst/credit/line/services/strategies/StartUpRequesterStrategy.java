@@ -11,7 +11,7 @@ import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
 
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class StartUpCreditLineValidator implements ICreditLineStrategy {
+public class StartUpRequesterStrategy implements FoundingTypeStrategy {
 
   private final Integer monthlyRevenueRatio;
   private final Integer cashBalanceRatio;

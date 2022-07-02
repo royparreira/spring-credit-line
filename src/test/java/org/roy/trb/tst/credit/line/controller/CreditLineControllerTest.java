@@ -196,7 +196,7 @@ class CreditLineControllerTest {
 
   private MockHttpServletRequestBuilder getBasePostHttpRequestBuilder() {
 
-    String uri = "v1/" + REQUEST_CREDIT_LINE_ENDPOINT;
+    String uri = "/v1" + REQUEST_CREDIT_LINE_ENDPOINT;
 
     return post(uri).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
   }

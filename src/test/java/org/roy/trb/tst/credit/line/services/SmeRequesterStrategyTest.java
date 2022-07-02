@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.services.strategies.ICreditLineStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.SMECreditLineValidator;
+import org.roy.trb.tst.credit.line.services.strategies.FoundingTypeStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.SmeRequesterStrategy;
 
 @ExtendWith(MockitoExtension.class)
-class SMECreditLineValidatorTest {
+class SmeRequesterStrategyTest {
 
   private static final Float SME_ACCEPTABLE_CREDIT_LINE =
       (MOCKED_SME_MONTHLY_REVENUE / MONTHLY_REVENUE_RATIO) - 100F;
@@ -25,12 +25,12 @@ class SMECreditLineValidatorTest {
   private static final Float SME_NON_REJECTABLE_CREDIT_LINE =
       (MOCKED_SME_MONTHLY_REVENUE / MONTHLY_REVENUE_RATIO) + 100F;
 
-  private static ICreditLineStrategy mockedSmeCreditLineStrategy;
+  private static FoundingTypeStrategy mockedSmeCreditLineStrategy;
 
   @BeforeAll
   static void setUpMocks() {
     mockedSmeCreditLineStrategy =
-        SMECreditLineValidator.builder().monthlyRevenueRatio(MONTHLY_REVENUE_RATIO).build();
+        SmeRequesterStrategy.builder().monthlyRevenueRatio(MONTHLY_REVENUE_RATIO).build();
   }
 
   @Test
