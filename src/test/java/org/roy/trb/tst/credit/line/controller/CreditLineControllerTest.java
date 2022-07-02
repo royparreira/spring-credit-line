@@ -53,7 +53,7 @@ class CreditLineControllerTest {
   void shouldAcceptCreditLineRequest() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(
+    when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenReturn(
             PostRequestCreditLineResponseBody.builder()
@@ -77,7 +77,7 @@ class CreditLineControllerTest {
   void shouldRejectCreditNewLineRequest() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(
+    when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException());
 
@@ -98,7 +98,7 @@ class CreditLineControllerTest {
   void shouldRejectCreditLineRequestMoreThanThreeFails() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(
+    when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException(SALES_AGENT_MSG));
 
@@ -153,7 +153,7 @@ class CreditLineControllerTest {
   void shouldResponseInternalServerErrorForGeneralExceptions() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(
+    when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RuntimeException());
 

@@ -54,7 +54,7 @@ public class CreditLineServiceImpl implements CreditLineService {
 
   /** {@inheritDoc} */
   @Override
-  public PostRequestCreditLineResponseBody validateCreditLine(
+  public PostRequestCreditLineResponseBody requestCreditLine(
       UUID customerId,
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType) {

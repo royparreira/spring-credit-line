@@ -90,7 +90,7 @@ class CreditLineServiceTest {
 
     // act
     PostRequestCreditLineResponseBody acceptedCreditLine =
-        creditLineService.validateCreditLine(
+        creditLineService.requestCreditLine(
             MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
     // expect
@@ -113,7 +113,7 @@ class CreditLineServiceTest {
     assertThrows(
         RejectedCreditLineException.class,
         () ->
-            creditLineService.validateCreditLine(
+            creditLineService.requestCreditLine(
                 MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType));
   }
 
@@ -129,7 +129,7 @@ class CreditLineServiceTest {
         .thenReturn(mockAlreadyAcceptedRequest());
 
     PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
-        creditLineService.validateCreditLine(
+        creditLineService.requestCreditLine(
             MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
     assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
@@ -149,7 +149,7 @@ class CreditLineServiceTest {
         .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
 
     PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
-        creditLineService.validateCreditLine(
+        creditLineService.requestCreditLine(
             MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
     assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
@@ -172,7 +172,7 @@ class CreditLineServiceTest {
         assertThrows(
             RejectedCreditLineException.class,
             () ->
-                creditLineService.validateCreditLine(
+                creditLineService.requestCreditLine(
                     MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType));
 
     // expect
@@ -196,7 +196,7 @@ class CreditLineServiceTest {
         assertThrows(
             RejectedCreditLineException.class,
             () ->
-                creditLineService.validateCreditLine(
+                creditLineService.requestCreditLine(
                     MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType));
 
     // expect

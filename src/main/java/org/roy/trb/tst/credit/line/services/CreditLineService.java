@@ -14,7 +14,7 @@ public interface CreditLineService {
    * @param postRequestCreditLineRequestBody DTO containing the request data
    * @return credit line request status. Either accepted or rejected
    */
-  PostRequestCreditLineResponseBody validateCreditLine(
+  PostRequestCreditLineResponseBody requestCreditLine(
       UUID customerId,
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType);

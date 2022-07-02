@@ -23,7 +23,7 @@ public interface CreditLineApi {
   @ApiResponse(responseCode = "400", description = BAD_REQUEST_DESCRIPTION)
   @ApiResponse(responseCode = "429", description = TOO_MANY_REQUESTS_DESCRIPTION)
   @ApiResponse(responseCode = "500", description = INTERNAL_SERVER_ERROR_DESCRIPTION)
-  ContractResponse<PostRequestCreditLineResponseBody> validateCreditLine(
+  ContractResponse<PostRequestCreditLineResponseBody> requestCreditLine(
       @Valid PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       @Parameter(
               description = "Id of the customer asking for credit.",

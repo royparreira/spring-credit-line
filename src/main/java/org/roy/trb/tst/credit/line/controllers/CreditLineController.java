@@ -44,7 +44,7 @@ public class CreditLineController implements CreditLineApi {
       consumes = APPLICATION_JSON_VALUE,
       produces = APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public ContractResponse<PostRequestCreditLineResponseBody> validateCreditLine(
+  public ContractResponse<PostRequestCreditLineResponseBody> requestCreditLine(
       @Valid @RequestBody PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       @RequestHeader(value = CUSTOMER_ID_HEADER) UUID customerId,
       @RequestHeader(value = FOUNDING_TYPE_HEADER) FoundingType foundingType,
@@ -59,7 +59,7 @@ public class CreditLineController implements CreditLineApi {
     return log.traceExit(
         ContractResponse.<PostRequestCreditLineResponseBody>builder()
             .response(
-                creditLineService.validateCreditLine(
+                creditLineService.requestCreditLine(
                     customerId, postRequestCreditLineRequestBody, foundingType))
             .path(servlet.getServletPath())
             .build());
