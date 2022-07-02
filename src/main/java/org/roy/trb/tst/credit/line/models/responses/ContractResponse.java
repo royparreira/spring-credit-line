@@ -1,5 +1,7 @@
 package org.roy.trb.tst.credit.line.models.responses;
 
+import static org.roy.trb.tst.credit.line.constants.ApiEndpoints.REQUEST_CREDIT_LINE_ENDPOINT;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,6 +33,6 @@ public class ContractResponse<T> {
   @Schema(example = "2022-06-26T02:14:21.120Z", description = "Time stamp of the request.")
   private ZonedDateTime utcTimestamp = ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
 
-  @Schema(example = "/v1/validate", description = "Path of the endpoint")
+  @Schema(example = REQUEST_CREDIT_LINE_ENDPOINT, description = "Path of the endpoint")
   private String path;
 }

@@ -30,7 +30,7 @@ public class CreditLineRequestRecords {
   @Column(nullable = false, columnDefinition = "varchar(20)")
   private String creditLineStatus;
 
-  @Column(nullable = false, columnDefinition = "timestamp without time zone")
+  @Column(nullable = false, columnDefinition = "timestamp with time zone")
   private ZonedDateTime requestedDate;
 
   @Column(nullable = false)

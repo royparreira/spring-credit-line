@@ -1,5 +1,6 @@
 package org.roy.trb.tst.credit.line.controllers;
 
+import static org.roy.trb.tst.credit.line.constants.ApiEndpoints.REQUEST_CREDIT_LINE_ENDPOINT;
 import static org.roy.trb.tst.credit.line.constants.ApiParameterNames.CUSTOMER_ID_HEADER;
 import static org.roy.trb.tst.credit.line.constants.ApiParameterNames.FOUNDING_TYPE_HEADER;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -39,7 +40,7 @@ public class CreditLineController implements CreditLineApi {
 
   @Override
   @PostMapping(
-      path = "/validate",
+      path = REQUEST_CREDIT_LINE_ENDPOINT,
       consumes = APPLICATION_JSON_VALUE,
       produces = APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)

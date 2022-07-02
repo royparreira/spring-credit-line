@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Descriptions {
 
-  /** Description for POST v1/validate 202 response */
+  /** Description for POST v1/request-credit-line 202 response */
   public static final String CREDIT_LINE_REQUEST_ACCEPTED_DESCRIPTION =
       "CREDIT LINE request was ACCEPTED";
 
-  /** Description for POST v1/validate 202 response */
+  /** Description for POST v1/request-credit-line 202 response */
   public static final String CREDIT_LINE_REQUEST_REJECTED_DESCRIPTION =
       "Processing went well, but the CREDIT LINE request was REJECTED";
 
