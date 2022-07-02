@@ -1,7 +1,6 @@
 package org.roy.trb.tst.credit.line.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_GREATER_CASH_BALANCE;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_START_UP_GREATER_MONTHLY_REVENUE;
@@ -11,7 +10,6 @@ import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTH
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,11 +82,11 @@ class StartUpRequesterStrategyTest {
             .build();
 
     // act
-    Optional<BigDecimal> rejectedCreditLineRequest =
+    BigDecimal rejectedCreditLineRequest =
         mockedStartUpCreditLineStrategy.getCreditLine(requesterFinancialData);
 
     // expect
-    assertTrue(rejectedCreditLineRequest.isEmpty());
+    assertEquals(BigDecimal.ZERO, rejectedCreditLineRequest);
   }
 
   @ParameterizedTest
@@ -107,11 +105,10 @@ class StartUpRequesterStrategyTest {
             .build();
 
     // act
-    Optional<BigDecimal> acceptedCreditLineRequest =
+    BigDecimal acceptedCreditLineRequest =
         mockedStartUpCreditLineStrategy.getCreditLine(requesterFinancialData);
 
     // expect
-    assertTrue(acceptedCreditLineRequest.isPresent());
-    assertEquals(expectedAcceptedCreditLine, acceptedCreditLineRequest.get());
+    assertEquals(expectedAcceptedCreditLine, acceptedCreditLineRequest);
   }
 }

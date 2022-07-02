@@ -4,7 +4,6 @@ import static lombok.AccessLevel.PRIVATE;
 import static org.roy.trb.tst.credit.line.utils.MathUtils.roundFloatTwoPlaces;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
@@ -16,7 +15,7 @@ public class SmeRequesterStrategy implements FoundingTypeStrategy {
   private final Integer monthlyRevenueRatio;
 
   @Override
-  public Optional<BigDecimal> getCreditLine(RequesterFinancialData financialData) {
+  public BigDecimal getCreditLine(RequesterFinancialData financialData) {
 
     float recommendedCreditLine = (financialData.getMonthlyRevenue() / monthlyRevenueRatio);
 
@@ -24,6 +23,6 @@ public class SmeRequesterStrategy implements FoundingTypeStrategy {
 
     BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCredit());
 
-    return wasCreditRequestAccepted ? Optional.of(acceptedCreditLine) : Optional.empty();
+    return wasCreditRequestAccepted ? acceptedCreditLine : BigDecimal.ZERO;
   }
 }

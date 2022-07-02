@@ -128,8 +128,8 @@ public class CreditLineServiceImpl implements CreditLineService {
 
   private CreditLineRequestRecordDao processNewCreditLineResponse(
       UUID customerId, RequesterFinancialData requesterFinancialData, ZonedDateTime requestedDate) {
-    BigDecimal approvedCredit =
-        foundingTypeStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
+
+    BigDecimal approvedCredit = foundingTypeStrategy.getCreditLine(requesterFinancialData);
 
     var creditLineStatusResponse =
         CreditLineRequestRecordDao.builder()
@@ -155,8 +155,7 @@ public class CreditLineServiceImpl implements CreditLineService {
         throw new RejectedCreditLineException(SALES_AGENT_MSG);
       }
 
-      BigDecimal approvedCredit =
-          foundingTypeStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
+      BigDecimal approvedCredit = foundingTypeStrategy.getCreditLine(requesterFinancialData);
 
       saveOrUpdateCreditLineResponse(existentCreditLineResponse, approvedCredit, requestedDate);
     }

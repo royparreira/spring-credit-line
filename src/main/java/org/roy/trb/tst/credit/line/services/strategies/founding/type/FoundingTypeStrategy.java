@@ -6,7 +6,6 @@ import static org.roy.trb.tst.credit.line.enums.FoundingType.SME;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.STARTUP;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
 import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
@@ -43,5 +42,5 @@ public interface FoundingTypeStrategy {
    * @param financialData requester financial information
    * @return Optional of the approved credit line request
    */
-  Optional<BigDecimal> getCreditLine(RequesterFinancialData financialData);
+  BigDecimal getCreditLine(RequesterFinancialData financialData);
 }
