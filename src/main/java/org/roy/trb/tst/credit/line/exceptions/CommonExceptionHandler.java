@@ -135,6 +135,8 @@ public class CommonExceptionHandler {
         contractResponse, getProducesJsonHttpHeader(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  // TODO: add handler for HttpMessageNotReadableException when invalid request components
+
   private HttpHeaders getProducesJsonHttpHeader() {
 
     var defaultHttpHeaders = new HttpHeaders();

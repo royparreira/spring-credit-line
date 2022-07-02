@@ -3,6 +3,7 @@ package org.roy.trb.tst.credit.line.controller;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.roy.trb.tst.credit.line.constants.ApiEndpoints.REQUEST_CREDIT_LINE_ENDPOINT;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_STRING_CUSTOMER_ID;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeAcceptableRequest;
@@ -40,7 +41,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @WebMvcTest(controllers = CreditLineController.class)
 class CreditLineControllerTest {
 
-  private static final String VALIDATE_POST_URL = "/v1/validate";
   private static final String APPROVED_CREDIT_LINE = "10000";
 
   @MockBean private CreditLineService creditLineService;
@@ -195,9 +195,10 @@ class CreditLineControllerTest {
   }
 
   private MockHttpServletRequestBuilder getBasePostHttpRequestBuilder() {
-    return post(VALIDATE_POST_URL)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON);
+
+    String uri = "v1/" + REQUEST_CREDIT_LINE_ENDPOINT;
+
+    return post(uri).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
   }
 
   private void assertErrorResponse(ResultActions performHttpCall) throws Exception {
