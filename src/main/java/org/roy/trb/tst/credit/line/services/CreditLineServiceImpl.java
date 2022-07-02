@@ -14,13 +14,13 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecords;
+import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecord;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
+import org.roy.trb.tst.credit.line.models.dao.CreditLineRequestRecordDao;
 import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
@@ -68,12 +68,12 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     setFoundingTypeStrategy(foundingType);
 
-    Optional<CreditLineRequestRecords> optionalCreditLineRequest =
+    Optional<CreditLineRequestRecord> optionalCreditLineRequest =
         creditLineRequestsRepository.findById(customerId);
 
     if (optionalCreditLineRequest.isPresent()) {
 
-      CreditLineStatusResponse existentCreditLineResponse =
+      CreditLineRequestRecordDao existentCreditLineResponse =
           processExistentCreditLineResponse(
               requesterFinancialData, requestedDate, optionalCreditLineRequest.get());
 
@@ -89,31 +89,31 @@ public class CreditLineServiceImpl implements CreditLineService {
   @Override
   public CreditLineStatus getCustomerCreditLineStatus(UUID customerId) {
 
-    CreditLineRequestRecords entity =
+    CreditLineRequestRecord entity =
         creditLineRequestsRepository
             .findById(customerId)
-            .orElse(CreditLineRequestRecords.builder().creditLineStatus(REJECTED.name()).build());
+            .orElse(CreditLineRequestRecord.builder().creditLineStatus(REJECTED.name()).build());
 
     return CreditLineStatus.valueOf(entity.getCreditLineStatus());
   }
 
   private PostRequestCreditLineResponseBody getValidateCreditApiResponse(
-      CreditLineStatusResponse creditLineStatusResponse) {
+      CreditLineRequestRecordDao creditLineRequestRecordDao) {
 
-    if (creditLineStatusResponse.getCreditLineStatus().equals(REJECTED)) {
+    if (creditLineRequestRecordDao.getCreditLineStatus().equals(REJECTED)) {
       throw new RejectedCreditLineException();
     }
 
-    return mapper.mapToCreditLineApiResponse(creditLineStatusResponse);
+    return mapper.mapToCreditLineApiResponse(creditLineRequestRecordDao);
   }
 
-  private CreditLineStatusResponse processNewCreditLineResponse(
+  private CreditLineRequestRecordDao processNewCreditLineResponse(
       UUID customerId, RequesterFinancialData requesterFinancialData, ZonedDateTime requestedDate) {
     BigDecimal approvedCredit =
         foundingTypeStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
 
     var creditLineStatusResponse =
-        CreditLineStatusResponse.builder()
+        CreditLineRequestRecordDao.builder()
             .customerId(customerId)
             .acceptedCreditLine(approvedCredit)
             .attempts(0)
@@ -124,10 +124,10 @@ public class CreditLineServiceImpl implements CreditLineService {
     return creditLineStatusResponse;
   }
 
-  private CreditLineStatusResponse processExistentCreditLineResponse(
+  private CreditLineRequestRecordDao processExistentCreditLineResponse(
       RequesterFinancialData requesterFinancialData,
       ZonedDateTime requestedDate,
-      CreditLineRequestRecords creditLineRequest) {
+      CreditLineRequestRecord creditLineRequest) {
     var existentCreditLineResponse = mapper.mapToCreditLineStatusResponse(creditLineRequest);
 
     if (REJECTED.equals(existentCreditLineResponse.getCreditLineStatus())) {
@@ -173,21 +173,21 @@ public class CreditLineServiceImpl implements CreditLineService {
   }
 
   private void saveOrUpdateCreditLineResponse(
-      CreditLineStatusResponse creditLineStatusResponse,
+      CreditLineRequestRecordDao creditLineRequestRecordDao,
       BigDecimal approvedCredit,
       ZonedDateTime requestedDate) {
 
-    Integer currentAttempts = creditLineStatusResponse.getAttempts();
+    Integer currentAttempts = creditLineRequestRecordDao.getAttempts();
 
     var requestStatus = getCreditLineStatus(approvedCredit);
 
-    creditLineStatusResponse.setAcceptedCreditLine(approvedCredit);
-    creditLineStatusResponse.setCreditLineStatus(requestStatus);
-    creditLineStatusResponse.setRequestedDate(requestedDate);
-    creditLineStatusResponse.setAttempts(++currentAttempts);
+    creditLineRequestRecordDao.setAcceptedCreditLine(approvedCredit);
+    creditLineRequestRecordDao.setCreditLineStatus(requestStatus);
+    creditLineRequestRecordDao.setRequestedDate(requestedDate);
+    creditLineRequestRecordDao.setAttempts(++currentAttempts);
 
     creditLineRequestsRepository.save(
-        mapper.mapToCreditLineRequestEntity(creditLineStatusResponse));
+        mapper.mapToCreditLineRequestEntity(creditLineRequestRecordDao));
   }
 
   private CreditLineStatus getCreditLineStatus(BigDecimal approvedCredit) {

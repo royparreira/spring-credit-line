@@ -8,13 +8,13 @@ import static org.roy.trb.tst.credit.line.services.CreditLineServiceImpl.MAX_NUM
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecords;
+import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecord;
 
 public class CreditLineEntityFixture {
 
-  public static Optional<CreditLineRequestRecords> mockAlreadyAcceptedRequest() {
+  public static Optional<CreditLineRequestRecord> mockAlreadyAcceptedRequest() {
     return Optional.of(
-        CreditLineRequestRecords.builder()
+        CreditLineRequestRecord.builder()
             .customerId(MOCKED_UUID_CUSTOMER_ID)
             .acceptedCreditLine(new BigDecimal("10000.00"))
             .creditLineStatus(ACCEPTED.name())
@@ -23,9 +23,9 @@ public class CreditLineEntityFixture {
             .build());
   }
 
-  public static Optional<CreditLineRequestRecords> mockAlreadyRejectedRequest(Integer attempts) {
+  public static Optional<CreditLineRequestRecord> mockAlreadyRejectedRequest(Integer attempts) {
     return Optional.of(
-        CreditLineRequestRecords.builder()
+        CreditLineRequestRecord.builder()
             .customerId(MOCKED_UUID_CUSTOMER_ID)
             .acceptedCreditLine(BigDecimal.ZERO)
             .creditLineStatus(REJECTED.name())

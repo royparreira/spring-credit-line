@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.models.responses;
+package org.roy.trb.tst.credit.line.models.dao;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -15,7 +15,7 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
-public class CreditLineStatusResponse {
+public class CreditLineRequestRecordDao {
 
   private UUID customerId;
 
