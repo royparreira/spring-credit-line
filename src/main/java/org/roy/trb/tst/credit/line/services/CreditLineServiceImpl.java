@@ -1,5 +1,6 @@
 package org.roy.trb.tst.credit.line.services;
 
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesRatios.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.SME;
@@ -24,6 +25,7 @@ import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestB
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
+import org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStatusStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.FoundingTypeStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.SmeRequesterStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.StartUpRequesterStrategy;
@@ -36,10 +38,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CreditLineServiceImpl implements CreditLineService {
 
-  public static final Integer MAX_NUMBER_OF_FAILED_ATTEMPTS = 3;
-
   private final CreditLineRequestMapper mapper;
-
   private final CreditLineRequestRepository creditLineRequestsRepository;
 
   @Setter
@@ -51,6 +50,7 @@ public class CreditLineServiceImpl implements CreditLineService {
   private Integer cashBalanceRatio;
 
   private FoundingTypeStrategy foundingTypeStrategy;
+  private CreditRequestStatusStrategy creditRequestStatusStrategy;
 
   /** {@inheritDoc} */
   @Override
@@ -66,7 +66,7 @@ public class CreditLineServiceImpl implements CreditLineService {
     var requesterFinancialData =
         mapper.mapToRequesterFinancialData(postRequestCreditLineRequestBody);
 
-    setFoundingTypeStrategy(foundingType);
+    foundingTypeStrategy = FoundingTypeStrategy.getFoundingTypeStrategy(foundingType);
 
     Optional<CreditLineRequestRecord> optionalCreditLineRequest =
         creditLineRequestsRepository.findById(customerId);
@@ -86,6 +86,37 @@ public class CreditLineServiceImpl implements CreditLineService {
     return getValidateCreditApiResponse(creditLineStatusResponse);
   }
 
+  public PostRequestCreditLineResponseBody requestCreditLineV2(
+      UUID customerId,
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
+
+    // "requestedDate" attribute must comply with real data
+    ZonedDateTime requestedDate = Instant.now().atZone(ZoneOffset.UTC);
+    postRequestCreditLineRequestBody.setRequestedDate(requestedDate);
+
+    var requesterFinancialData =
+        mapper.mapToRequesterFinancialData(postRequestCreditLineRequestBody);
+
+    Optional<CreditLineRequestRecord> optionalCreditLineRequest =
+        creditLineRequestsRepository.findById(customerId);
+
+    if (optionalCreditLineRequest.isPresent()) {
+
+      CreditLineRequestRecordDao existentCreditLineResponse =
+          processExistentCreditLineResponse(
+              requesterFinancialData, requestedDate, optionalCreditLineRequest.get());
+
+      return getValidateCreditApiResponse(existentCreditLineResponse);
+    }
+
+    var creditLineStatusResponse =
+        processNewCreditLineResponse(customerId, requesterFinancialData, requestedDate);
+
+    return getValidateCreditApiResponse(creditLineStatusResponse);
+  }
+
+  /** {@inheritDoc} */
   @Override
   public CreditLineStatus getCustomerCreditLineStatus(UUID customerId) {
 
@@ -172,6 +203,13 @@ public class CreditLineServiceImpl implements CreditLineService {
     }
   }
 
+  /**
+   * Persist on DB the most up-to-date info regarding credit line request
+   *
+   * @param creditLineRequestRecordDao request data
+   * @param approvedCredit approved credit for the request. Zero if request was rejected
+   * @param requestedDate date that the request was made.
+   */
   private void saveOrUpdateCreditLineResponse(
       CreditLineRequestRecordDao creditLineRequestRecordDao,
       BigDecimal approvedCredit,
@@ -179,7 +217,7 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     Integer currentAttempts = creditLineRequestRecordDao.getAttempts();
 
-    var requestStatus = getCreditLineStatus(approvedCredit);
+    var requestStatus = getProcessedCreditLineRequestStatus(approvedCredit);
 
     creditLineRequestRecordDao.setAcceptedCreditLine(approvedCredit);
     creditLineRequestRecordDao.setCreditLineStatus(requestStatus);
@@ -190,7 +228,13 @@ public class CreditLineServiceImpl implements CreditLineService {
         mapper.mapToCreditLineRequestEntity(creditLineRequestRecordDao));
   }
 
-  private CreditLineStatus getCreditLineStatus(BigDecimal approvedCredit) {
+  /**
+   * Get the credit line status based on the approved credit
+   *
+   * @param approvedCredit approved credit after process the credit line request
+   * @return costumer credit line status
+   */
+  private CreditLineStatus getProcessedCreditLineRequestStatus(BigDecimal approvedCredit) {
     return approvedCredit.equals(BigDecimal.ZERO) ? REJECTED : CreditLineStatus.ACCEPTED;
   }
 }

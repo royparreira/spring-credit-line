@@ -19,5 +19,11 @@ public interface CreditLineService {
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType);
 
+  /**
+   * Get the credit line status for a given costumer.
+   *
+   * @param customerId id of the customer
+   * @return The customer credit line status. If it's a new request it'll be considered as rejected.
+   */
   CreditLineStatus getCustomerCreditLineStatus(UUID customerId);
 }
