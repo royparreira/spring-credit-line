@@ -6,5 +6,6 @@ public enum ErrorType {
   EXCEED_API_QUOTA,
 
   MISMATCH_REQUEST,
+
   UNKNOWN_ERROR
 }
