@@ -15,6 +15,7 @@ import org.roy.trb.tst.credit.line.models.responses.ResponseError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -136,7 +137,26 @@ public class CommonExceptionHandler {
         contractResponse, getProducesJsonHttpHeader(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  // TODO: add handler for HttpMessageNotReadableException when invalid request components
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @ResponseBody
+  public ResponseEntity<ContractResponse<Void>> handleException(
+      HttpServletRequest request, HttpMessageNotReadableException exception) {
+
+    log.warn(exception.getMessage() + ": {}", exception.getMessage());
+    var contractResponse =
+        ContractResponse.<Void>builder()
+            .error(
+                ResponseError.builder()
+                    .errorCode(HttpStatus.BAD_REQUEST)
+                    .errorType(ErrorType.MISMATCH_REQUEST)
+                    .errorMessage(Descriptions.MISMATCH_REQUEST_DESCRIPTION)
+                    .build())
+            .path(request.getServletPath())
+            .build();
+
+    return new ResponseEntity<>(
+        contractResponse, getProducesJsonHttpHeader(), HttpStatus.BAD_REQUEST);
+  }
 
   private HttpHeaders getProducesJsonHttpHeader() {
 
