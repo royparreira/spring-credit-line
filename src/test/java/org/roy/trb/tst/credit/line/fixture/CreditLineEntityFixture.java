@@ -1,6 +1,6 @@
 package org.roy.trb.tst.credit.line.fixture;
 
-import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MAX_NUMBER_OF_FAILED_ATTEMPTS;
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.ACCEPTED;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_REQUESTED_DATE;

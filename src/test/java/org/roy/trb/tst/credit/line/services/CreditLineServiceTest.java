@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MAX_NUMBER_OF_FAILED_ATTEMPTS;
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.ACCEPTED;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;

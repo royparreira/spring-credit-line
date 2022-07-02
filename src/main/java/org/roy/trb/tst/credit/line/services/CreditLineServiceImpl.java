@@ -1,6 +1,6 @@
 package org.roy.trb.tst.credit.line.services;
 
-import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MAX_NUMBER_OF_FAILED_ATTEMPTS;
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 

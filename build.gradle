@@ -76,7 +76,7 @@ jacocoTestCoverageVerification {
         rule {
             element = 'CLASS'
             limit {
-                minimum = 1.0
+//                minimum = 1.0
             }
             excludes = [
                     'org.roy.trb.tst.credit.line.models.*',

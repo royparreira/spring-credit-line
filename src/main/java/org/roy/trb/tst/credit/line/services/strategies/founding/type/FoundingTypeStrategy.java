@@ -1,7 +1,7 @@
 package org.roy.trb.tst.credit.line.services.strategies.founding.type;
 
-import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.CASH_BALANCE_RATIO;
-import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MONTHLY_REVENUE_RATIO;
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.CASH_BALANCE_RATIO;
+import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.SME;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.STARTUP;
 
