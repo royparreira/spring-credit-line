@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
+import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
 @Builder
 @AllArgsConstructor(access = PRIVATE)

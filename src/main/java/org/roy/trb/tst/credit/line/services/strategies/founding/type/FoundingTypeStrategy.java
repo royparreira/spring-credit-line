@@ -2,7 +2,7 @@ package org.roy.trb.tst.credit.line.services.strategies.founding.type;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
+import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
 public interface FoundingTypeStrategy {
 

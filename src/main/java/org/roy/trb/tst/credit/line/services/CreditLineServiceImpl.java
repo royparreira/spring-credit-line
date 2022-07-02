@@ -18,8 +18,8 @@ import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecord;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.models.dao.CreditLineRequestRecordDao;
+import org.roy.trb.tst.credit.line.models.daos.CreditLineRequestRecordDao;
+import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
@@ -104,7 +104,7 @@ public class CreditLineServiceImpl implements CreditLineService {
       throw new RejectedCreditLineException();
     }
 
-    return mapper.mapToCreditLineApiResponse(creditLineRequestRecordDao);
+    return mapper.mapToRequestCreditLineResponseBody(creditLineRequestRecordDao);
   }
 
   private CreditLineRequestRecordDao processNewCreditLineResponse(
@@ -128,7 +128,7 @@ public class CreditLineServiceImpl implements CreditLineService {
       RequesterFinancialData requesterFinancialData,
       ZonedDateTime requestedDate,
       CreditLineRequestRecord creditLineRequest) {
-    var existentCreditLineResponse = mapper.mapToCreditLineStatusResponse(creditLineRequest);
+    var existentCreditLineResponse = mapper.mapToCreditLineRequestRecordDao(creditLineRequest);
 
     if (REJECTED.equals(existentCreditLineResponse.getCreditLineStatus())) {
 

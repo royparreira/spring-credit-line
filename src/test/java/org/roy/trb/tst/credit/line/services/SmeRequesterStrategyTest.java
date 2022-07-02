@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
+import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.FoundingTypeStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.SmeRequesterStrategy;
 

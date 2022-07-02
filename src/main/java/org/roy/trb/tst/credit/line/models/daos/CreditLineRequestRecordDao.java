@@ -1,4 +1,4 @@
-package org.roy.trb.tst.credit.line.models.dao;
+package org.roy.trb.tst.credit.line.models.daos;
 
 import static lombok.AccessLevel.PRIVATE;
 
