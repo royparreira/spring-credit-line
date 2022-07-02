@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.roy.trb.tst.credit.line.docs.CreditLineApi;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
@@ -45,20 +45,22 @@ public class CreditLineController implements CreditLineApi {
       produces = APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public ContractResponse<PostRequestCreditLineResponseBody> validateCreditLine(
-      @Valid @RequestBody CreditLineRequest creditLineRequest,
+      @Valid @RequestBody PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       @RequestHeader(value = CUSTOMER_ID_HEADER) UUID customerId,
       @RequestHeader(value = FOUNDING_TYPE_HEADER) FoundingType foundingType,
       HttpServletRequest servlet) {
 
     log.traceEntry(
-        "Initializing credit line request validation. Request {}", creditLineRequest.toString());
+        "Initializing credit line request validation. Request {}",
+        postRequestCreditLineRequestBody.toString());
 
     rateLimiterService.checkRateLimit(customerId);
 
     return log.traceExit(
         ContractResponse.<PostRequestCreditLineResponseBody>builder()
             .response(
-                creditLineService.validateCreditLine(customerId, creditLineRequest, foundingType))
+                creditLineService.validateCreditLine(
+                    customerId, postRequestCreditLineRequestBody, foundingType))
             .path(servlet.getServletPath())
             .build());
   }

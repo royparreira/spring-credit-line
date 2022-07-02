@@ -23,7 +23,7 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.exceptions.TooManyRequestsException;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
 import org.roy.trb.tst.credit.line.services.RateLimiterService;
@@ -53,7 +53,8 @@ class CreditLineControllerTest {
   void shouldAcceptCreditLineRequest() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.validateCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenReturn(
             PostRequestCreditLineResponseBody.builder()
                 .creditLineStatus(CreditLineStatus.ACCEPTED)
@@ -76,7 +77,8 @@ class CreditLineControllerTest {
   void shouldRejectCreditNewLineRequest() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.validateCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException());
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
@@ -96,7 +98,8 @@ class CreditLineControllerTest {
   void shouldRejectCreditLineRequestMoreThanThreeFails() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.validateCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException(SALES_AGENT_MSG));
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
@@ -150,7 +153,8 @@ class CreditLineControllerTest {
   void shouldResponseInternalServerErrorForGeneralExceptions() throws Exception {
 
     mockAllowedRateLimit();
-    when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
+    when(creditLineService.validateCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RuntimeException());
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();

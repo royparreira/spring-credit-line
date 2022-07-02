@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
 import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecords;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 
@@ -13,7 +13,8 @@ import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineRespons
 public interface CreditLineRequestMapper {
 
   @Mapping(target = "requestedCredit", source = "requestedCreditLine")
-  RequesterFinancialData mapToRequesterFinancialData(CreditLineRequest creditLineRequest);
+  RequesterFinancialData mapToRequesterFinancialData(
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody);
 
   CreditLineStatusResponse mapToCreditLineStatusResponse(
       CreditLineRequestRecords creditLineRequestRecordsEntity);

@@ -19,7 +19,7 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
+import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
@@ -55,13 +55,16 @@ public class CreditLineServiceImpl implements CreditLineService {
   /** {@inheritDoc} */
   @Override
   public PostRequestCreditLineResponseBody validateCreditLine(
-      UUID customerId, CreditLineRequest creditLineRequest, FoundingType foundingType) {
+      UUID customerId,
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
+      FoundingType foundingType) {
 
     // "requestedDate" attribute must comply with real data
     ZonedDateTime requestedDate = Instant.now().atZone(ZoneOffset.UTC);
-    creditLineRequest.setRequestedDate(requestedDate);
+    postRequestCreditLineRequestBody.setRequestedDate(requestedDate);
 
-    var requesterFinancialData = mapper.mapToRequesterFinancialData(creditLineRequest);
+    var requesterFinancialData =
+        mapper.mapToRequesterFinancialData(postRequestCreditLineRequestBody);
 
     setFoundingTypeStrategy(foundingType);
 
