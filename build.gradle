@@ -76,7 +76,7 @@ jacocoTestCoverageVerification {
         rule {
             element = 'CLASS'
             limit {
-//                minimum = 1.0
+                minimum = 1.0
             }
             excludes = [
                     'org.roy.trb.tst.credit.line.models.*',
@@ -85,6 +85,8 @@ jacocoTestCoverageVerification {
                     'org.roy.trb.tst.credit.line.configs.*',
                     'org.roy.trb.tst.credit.line.services.mappers.*',
                     'org.roy.trb.tst.credit.line.services.RateLimiterServiceImpl',
+                    'org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStrategy',
+                    'org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy',
                     'org.roy.trb.tst.credit.line.TrbTstCreditLineServiceApplication'
             ]
         }
@@ -100,6 +102,8 @@ sonarqube {
                         '**/org/roy/trb/tst/credit/line/configs/**, ' +
                         '**/org/roy/trb/tst/credit/line/services/mappers/**, ' +
                         '**/org/roy/trb/tst/credit/line/services/RateLimiterServiceImpl.java, ' +
+                        '**/org/roy/trb/tst/credit/line/services/strategies/credit/status/CreditRequestStrategy.java, ' +
+                        '**/org/roy/trb/tst/credit/line/services/strategies/founding/type/CreditLineCalculationStrategy.java, ' +
                         '**/org/roy/trb/tst/credit/line/TrbTstCreditLineServiceApplication.java'
     }
 }

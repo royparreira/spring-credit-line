@@ -60,13 +60,9 @@ public class CreditLineServiceImpl implements CreditLineService {
     return getThePostRequestCreditLineResponseBody(processedCreditLineRequest);
   }
 
-  /**
-   * Check if the user with the given customerId has already made any credit line request
-   *
-   * @param customerId query filter
-   * @return status of the request
-   */
-  private CreditLineRequestRecordDao getLastCreditLineRecord(UUID customerId) {
+  /** {@inheritDoc} */
+  @Override
+  public CreditLineRequestRecordDao getLastCreditLineRecord(UUID customerId) {
 
     return mapper.mapToCreditLineRequestRecordDao(
         creditLineRequestsRepository

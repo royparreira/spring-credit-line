@@ -32,6 +32,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -41,8 +43,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @WebMvcTest(controllers = CreditLineController.class)
 class CreditLineControllerTest {
 
+  public static final String MOCK_MSG = "MOCK";
   private static final String APPROVED_CREDIT_LINE = "10000";
-
   @MockBean private CreditLineService creditLineService;
   @MockBean private RateLimiterService rateLimiterService;
 
@@ -184,6 +186,20 @@ class CreditLineControllerTest {
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
 
     assertErrorResponse(mockMvc.perform(builder).andExpect(status().isInternalServerError()));
+  }
+
+  @Test
+  void shouldRespondBadRequestWhenHttpMessageNotReadableExceptionIsThrown() throws Exception {
+
+    doThrow(
+            new HttpMessageNotReadableException(
+                MOCK_MSG, new MockHttpInputMessage(MOCK_MSG.getBytes())))
+        .when(rateLimiterService)
+        .checkRateLimit(any(UUID.class));
+
+    MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
+
+    assertErrorResponse(mockMvc.perform(builder).andExpect(status().isBadRequest()));
   }
 
   private MockHttpServletRequestBuilder getStartUpRequestTemplate() throws JsonProcessingException {
