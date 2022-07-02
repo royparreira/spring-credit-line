@@ -10,7 +10,7 @@ import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class StartUpRequesterStrategy implements FoundingTypeStrategy {
+public class StartUpRequesterStrategy implements CreditLineCalculationStrategy {
 
   private final Integer monthlyRevenueRatio;
   private final Integer cashBalanceRatio;
@@ -27,9 +27,9 @@ public class StartUpRequesterStrategy implements FoundingTypeStrategy {
         Math.max(monthlyRevenueRecommendedCreditLine, cashBalanceRecommendedCreditLine);
 
     boolean wasCreditRequestAccepted =
-        financialData.getRequestedCredit() <= overAllRecommendedCreditLine;
+        financialData.getRequestedCreditLine() <= overAllRecommendedCreditLine;
 
-    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCredit());
+    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCreditLine());
 
     return wasCreditRequestAccepted ? acceptedCreditLine : BigDecimal.ZERO;
   }

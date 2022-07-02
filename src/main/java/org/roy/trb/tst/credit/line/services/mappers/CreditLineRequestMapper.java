@@ -1,5 +1,6 @@
 package org.roy.trb.tst.credit.line.services.mappers;
 
+import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
@@ -18,9 +19,8 @@ public interface CreditLineRequestMapper {
    * @param postRequestCreditLineRequestBody POST credit-line-request request body
    * @return costumer financial object
    */
-  @Mapping(target = "requestedCredit", source = "requestedCreditLine")
   RequesterFinancialData mapToRequesterFinancialData(
-      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody);
+      PostRequestCreditLineRequestBody postRequestCreditLineRequestBody, UUID customerId);
 
   /**
    * Map entity to model layer POST credit-line-request data

@@ -10,7 +10,7 @@ import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class SmeRequesterStrategy implements FoundingTypeStrategy {
+public class SmeRequesterStrategy implements CreditLineCalculationStrategy {
 
   private final Integer monthlyRevenueRatio;
 
@@ -19,9 +19,10 @@ public class SmeRequesterStrategy implements FoundingTypeStrategy {
 
     float recommendedCreditLine = (financialData.getMonthlyRevenue() / monthlyRevenueRatio);
 
-    boolean wasCreditRequestAccepted = financialData.getRequestedCredit() <= recommendedCreditLine;
+    boolean wasCreditRequestAccepted =
+        financialData.getRequestedCreditLine() <= recommendedCreditLine;
 
-    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCredit());
+    BigDecimal acceptedCreditLine = roundFloatTwoPlaces(financialData.getRequestedCreditLine());
 
     return wasCreditRequestAccepted ? acceptedCreditLine : BigDecimal.ZERO;
   }

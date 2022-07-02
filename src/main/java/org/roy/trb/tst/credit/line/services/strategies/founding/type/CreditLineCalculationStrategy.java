@@ -10,7 +10,7 @@ import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
 import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
-public interface FoundingTypeStrategy {
+public interface CreditLineCalculationStrategy {
 
   /**
    * Set up the credit line validation logic based on the Strategy design pattern. Select the
@@ -18,7 +18,7 @@ public interface FoundingTypeStrategy {
    *
    * @param foundingType strategy selector
    */
-  static FoundingTypeStrategy getFoundingTypeStrategy(FoundingType foundingType) {
+  static CreditLineCalculationStrategy getCreditLineCalculationStrategy(FoundingType foundingType) {
 
     if (SME.equals(foundingType)) {
 

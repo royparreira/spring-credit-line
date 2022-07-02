@@ -148,7 +148,7 @@ class CreditLineServiceTest {
 
   // Reject already rejected - more than maximum allowed
   @ParameterizedTest
-  @MethodSource("getMixCreditLineRequests")
+  @MethodSource("getRejectableCreditLineRequests")
   void shouldRejectAlreadyRejectedCreditLineRequestIfRejectedMoreThanMaximumAllowed(
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType) {
@@ -156,7 +156,7 @@ class CreditLineServiceTest {
     // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
-        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS + 1));
+        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
 
     // act
     RejectedCreditLineException exception =
@@ -180,7 +180,7 @@ class CreditLineServiceTest {
     // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
-        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
+        .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS - 1));
 
     // act
     RejectedCreditLineException exception =

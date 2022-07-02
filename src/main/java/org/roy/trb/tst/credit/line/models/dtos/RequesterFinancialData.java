@@ -1,5 +1,7 @@
 package org.roy.trb.tst.credit.line.models.dtos;
 
+import java.time.ZonedDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +14,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequesterFinancialData {
 
+  UUID customerId;
+
   Float cashBalance;
 
   Float monthlyRevenue;
 
-  Float requestedCredit;
+  Float requestedCreditLine;
+
+  ZonedDateTime requestedDate;
 }

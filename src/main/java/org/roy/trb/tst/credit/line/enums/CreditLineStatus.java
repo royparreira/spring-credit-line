@@ -12,7 +12,7 @@ public enum CreditLineStatus {
 
   REJECTED(Bandwidth.classic(1, Refill.smooth(1, Duration.ofSeconds(30)))),
 
-  NEW(null);
+  NONE(null);
 
   @Getter private final Bandwidth limit;
 }

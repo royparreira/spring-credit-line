@@ -18,13 +18,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
-import org.roy.trb.tst.credit.line.services.strategies.founding.type.FoundingTypeStrategy;
+import org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.StartUpRequesterStrategy;
 
 @ExtendWith(MockitoExtension.class)
 class StartUpRequesterStrategyTest {
 
-  private static FoundingTypeStrategy mockedStartUpCreditLineStrategy;
+  private static CreditLineCalculationStrategy mockedStartUpCreditLineStrategy;
 
   @BeforeAll
   static void setUpMocks() {
@@ -76,7 +76,7 @@ class StartUpRequesterStrategyTest {
     // given
     RequesterFinancialData requesterFinancialData =
         RequesterFinancialData.builder()
-            .requestedCredit(requestedCredit)
+            .requestedCreditLine(requestedCredit)
             .monthlyRevenue(monthlyRevenue)
             .cashBalance(cashBalance)
             .build();
@@ -99,7 +99,7 @@ class StartUpRequesterStrategyTest {
 
     RequesterFinancialData requesterFinancialData =
         RequesterFinancialData.builder()
-            .requestedCredit(requestedCredit)
+            .requestedCreditLine(requestedCredit)
             .monthlyRevenue(monthlyRevenue)
             .cashBalance(cashBalance)
             .build();
