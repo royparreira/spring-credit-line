@@ -16,7 +16,7 @@ import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
 @JsonInclude(Include.NON_NULL)
-public class CreditLineApiResponse {
+public class PostRequestCreditLineResponseBody {
 
   CreditLineStatus creditLineStatus;
 

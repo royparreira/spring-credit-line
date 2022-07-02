@@ -10,7 +10,7 @@ import org.roy.trb.tst.credit.line.constants.Descriptions;
 import org.roy.trb.tst.credit.line.constants.Messages;
 import org.roy.trb.tst.credit.line.enums.ErrorType;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.models.responses.ResponseError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,8 +48,9 @@ public class CommonExceptionHandler {
 
   @ResponseBody
   @ExceptionHandler({RejectedCreditLineException.class})
-  public ResponseEntity<ContractResponse<CreditLineApiResponse>> handleRejectedCreditLineExceptions(
-      HttpServletRequest request, RejectedCreditLineException exception) {
+  public ResponseEntity<ContractResponse<PostRequestCreditLineResponseBody>>
+      handleRejectedCreditLineExceptions(
+          HttpServletRequest request, RejectedCreditLineException exception) {
 
     log.info("Credit line request rejected!");
 
@@ -57,9 +58,9 @@ public class CommonExceptionHandler {
         exception.getCustomMessage().isEmpty() ? null : exception.getCustomMessage();
 
     var contractResponse =
-        ContractResponse.<CreditLineApiResponse>builder()
+        ContractResponse.<PostRequestCreditLineResponseBody>builder()
             .response(
-                CreditLineApiResponse.builder()
+                PostRequestCreditLineResponseBody.builder()
                     .creditLineStatus(REJECTED)
                     .message(customMessage)
                     .build())

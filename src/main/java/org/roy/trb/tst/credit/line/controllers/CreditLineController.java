@@ -14,7 +14,7 @@ import org.roy.trb.tst.credit.line.docs.CreditLineApi;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
 import org.roy.trb.tst.credit.line.services.RateLimiterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class CreditLineController implements CreditLineApi {
       consumes = APPLICATION_JSON_VALUE,
       produces = APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public ContractResponse<CreditLineApiResponse> validateCreditLine(
+  public ContractResponse<PostRequestCreditLineResponseBody> validateCreditLine(
       @Valid @RequestBody CreditLineRequest creditLineRequest,
       @RequestHeader(value = CUSTOMER_ID_HEADER) UUID customerId,
       @RequestHeader(value = FOUNDING_TYPE_HEADER) FoundingType foundingType,
@@ -56,7 +56,7 @@ public class CreditLineController implements CreditLineApi {
     rateLimiterService.checkRateLimit(customerId);
 
     return log.traceExit(
-        ContractResponse.<CreditLineApiResponse>builder()
+        ContractResponse.<PostRequestCreditLineResponseBody>builder()
             .response(
                 creditLineService.validateCreditLine(customerId, creditLineRequest, foundingType))
             .path(servlet.getServletPath())

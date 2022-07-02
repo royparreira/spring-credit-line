@@ -39,7 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
 
@@ -88,7 +88,7 @@ class CreditLineServiceTest {
         .thenReturn(Optional.empty());
 
     // act
-    CreditLineApiResponse acceptedCreditLine =
+    PostRequestCreditLineResponseBody acceptedCreditLine =
         creditLineService.validateCreditLine(
             MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
 
@@ -125,12 +125,13 @@ class CreditLineServiceTest {
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyAcceptedRequest());
 
-    CreditLineApiResponse creditLineApiResponse =
+    PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
         creditLineService.validateCreditLine(
             MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
 
-    assertEquals(ACCEPTED, creditLineApiResponse.getCreditLineStatus());
-    assertEquals(new BigDecimal("10000.00"), creditLineApiResponse.getAcceptedCreditLine());
+    assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
+    assertEquals(
+        new BigDecimal("10000.00"), postRequestCreditLineResponseBody.getAcceptedCreditLine());
   }
 
   // Accept already rejected - less than more than maximum allowed
@@ -143,11 +144,11 @@ class CreditLineServiceTest {
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
 
-    CreditLineApiResponse creditLineApiResponse =
+    PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
         creditLineService.validateCreditLine(
             MOCKED_UUID_CUSTOMER_ID, creditLineRequest, foundingType);
 
-    assertEquals(ACCEPTED, creditLineApiResponse.getCreditLineStatus());
+    assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
   }
 
   // Reject already rejected - more than maximum allowed

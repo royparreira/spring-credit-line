@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 
 public interface CreditLineApi {
 
@@ -23,7 +23,7 @@ public interface CreditLineApi {
   @ApiResponse(responseCode = "400", description = BAD_REQUEST_DESCRIPTION)
   @ApiResponse(responseCode = "429", description = TOO_MANY_REQUESTS_DESCRIPTION)
   @ApiResponse(responseCode = "500", description = INTERNAL_SERVER_ERROR_DESCRIPTION)
-  ContractResponse<CreditLineApiResponse> validateCreditLine(
+  ContractResponse<PostRequestCreditLineResponseBody> validateCreditLine(
       @Valid CreditLineRequest creditLineRequest,
       @Parameter(
               description = "Id of the customer asking for credit.",

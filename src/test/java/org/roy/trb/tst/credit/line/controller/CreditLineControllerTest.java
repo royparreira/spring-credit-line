@@ -24,7 +24,7 @@ import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.exceptions.TooManyRequestsException;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
 import org.roy.trb.tst.credit.line.services.RateLimiterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ class CreditLineControllerTest {
     mockAllowedRateLimit();
     when(creditLineService.validateCreditLine(any(UUID.class), any(CreditLineRequest.class), any()))
         .thenReturn(
-            CreditLineApiResponse.builder()
+            PostRequestCreditLineResponseBody.builder()
                 .creditLineStatus(CreditLineStatus.ACCEPTED)
                 .acceptedCreditLine(new BigDecimal(APPROVED_CREDIT_LINE))
                 .build());

@@ -6,8 +6,8 @@ import org.mapstruct.MappingConstants.ComponentModel;
 import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecords;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface CreditLineRequestMapper {
@@ -22,6 +22,6 @@ public interface CreditLineRequestMapper {
       CreditLineStatusResponse creditLineStatusResponse);
 
   @Mapping(target = "message", ignore = true)
-  CreditLineApiResponse mapToCreditLineApiResponse(
+  PostRequestCreditLineResponseBody mapToCreditLineApiResponse(
       CreditLineStatusResponse creditLineStatusResponse);
 }

@@ -20,8 +20,8 @@ import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.RequesterFinancialData;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
 import org.roy.trb.tst.credit.line.models.responses.CreditLineStatusResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.FoundingTypeStrategy;
@@ -50,20 +50,20 @@ public class CreditLineServiceImpl implements CreditLineService {
   @Value("${ratio.cash-balance}")
   private Integer cashBalanceRatio;
 
-  private FoundingTypeStrategy creditLineStrategy;
+  private FoundingTypeStrategy foundingTypeStrategy;
 
   /** {@inheritDoc} */
   @Override
-  public CreditLineApiResponse validateCreditLine(
+  public PostRequestCreditLineResponseBody validateCreditLine(
       UUID customerId, CreditLineRequest creditLineRequest, FoundingType foundingType) {
 
-    creditLineRequest.setRequestedDate(Instant.now().atZone(ZoneOffset.UTC));
+    // "requestedDate" attribute must comply with real data
+    ZonedDateTime requestedDate = Instant.now().atZone(ZoneOffset.UTC);
+    creditLineRequest.setRequestedDate(requestedDate);
 
     var requesterFinancialData = mapper.mapToRequesterFinancialData(creditLineRequest);
 
-    var requestedDate = creditLineRequest.getRequestedDate();
-
-    setCreditLineRequestValidationStrategy(foundingType);
+    setFoundingTypeStrategy(foundingType);
 
     Optional<CreditLineRequestRecords> optionalCreditLineRequest =
         creditLineRequestsRepository.findById(customerId);
@@ -83,7 +83,18 @@ public class CreditLineServiceImpl implements CreditLineService {
     return getValidateCreditApiResponse(creditLineStatusResponse);
   }
 
-  private CreditLineApiResponse getValidateCreditApiResponse(
+  @Override
+  public CreditLineStatus getCustomerCreditLineStatus(UUID customerId) {
+
+    CreditLineRequestRecords entity =
+        creditLineRequestsRepository
+            .findById(customerId)
+            .orElse(CreditLineRequestRecords.builder().creditLineStatus(REJECTED.name()).build());
+
+    return CreditLineStatus.valueOf(entity.getCreditLineStatus());
+  }
+
+  private PostRequestCreditLineResponseBody getValidateCreditApiResponse(
       CreditLineStatusResponse creditLineStatusResponse) {
 
     if (creditLineStatusResponse.getCreditLineStatus().equals(REJECTED)) {
@@ -96,7 +107,7 @@ public class CreditLineServiceImpl implements CreditLineService {
   private CreditLineStatusResponse processNewCreditLineResponse(
       UUID customerId, RequesterFinancialData requesterFinancialData, ZonedDateTime requestedDate) {
     BigDecimal approvedCredit =
-        creditLineStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
+        foundingTypeStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
 
     var creditLineStatusResponse =
         CreditLineStatusResponse.builder()
@@ -123,7 +134,7 @@ public class CreditLineServiceImpl implements CreditLineService {
       }
 
       BigDecimal approvedCredit =
-          creditLineStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
+          foundingTypeStrategy.getCreditLine(requesterFinancialData).orElse(BigDecimal.ZERO);
 
       saveOrUpdateCreditLineResponse(existentCreditLineResponse, approvedCredit, requestedDate);
     }
@@ -142,15 +153,15 @@ public class CreditLineServiceImpl implements CreditLineService {
    *
    * @param foundingType strategy selector
    */
-  private void setCreditLineRequestValidationStrategy(FoundingType foundingType) {
+  private void setFoundingTypeStrategy(FoundingType foundingType) {
 
     if (SME.equals(foundingType)) {
-      creditLineStrategy =
+      foundingTypeStrategy =
           SmeRequesterStrategy.builder().monthlyRevenueRatio(monthlyRevenueRatio).build();
     }
 
     if (STARTUP.equals(foundingType)) {
-      creditLineStrategy =
+      foundingTypeStrategy =
           StartUpRequesterStrategy.builder()
               .cashBalanceRatio(cashBalanceRatio)
               .monthlyRevenueRatio(monthlyRevenueRatio)
@@ -178,16 +189,5 @@ public class CreditLineServiceImpl implements CreditLineService {
 
   private CreditLineStatus getCreditLineStatus(BigDecimal approvedCredit) {
     return approvedCredit.equals(BigDecimal.ZERO) ? REJECTED : CreditLineStatus.ACCEPTED;
-  }
-
-  @Override
-  public CreditLineStatus getCustomerCreditLineStatus(UUID customerId) {
-
-    CreditLineRequestRecords entity =
-        creditLineRequestsRepository
-            .findById(customerId)
-            .orElse(CreditLineRequestRecords.builder().creditLineStatus(REJECTED.name()).build());
-
-    return CreditLineStatus.valueOf(entity.getCreditLineStatus());
   }
 }

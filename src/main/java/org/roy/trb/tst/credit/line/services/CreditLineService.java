@@ -4,7 +4,7 @@ import java.util.UUID;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.models.requests.CreditLineRequest;
-import org.roy.trb.tst.credit.line.models.responses.CreditLineApiResponse;
+import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 
 public interface CreditLineService {
 
@@ -14,7 +14,7 @@ public interface CreditLineService {
    * @param creditLineRequest DTO containing the request data
    * @return credit line request status. Either accepted or rejected
    */
-  CreditLineApiResponse validateCreditLine(
+  PostRequestCreditLineResponseBody validateCreditLine(
       UUID customerId, CreditLineRequest creditLineRequest, FoundingType foundingType);
 
   CreditLineStatus getCustomerCreditLineStatus(UUID customerId);
