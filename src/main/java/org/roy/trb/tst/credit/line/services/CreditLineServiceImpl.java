@@ -1,10 +1,8 @@
 package org.roy.trb.tst.credit.line.services;
 
-import static org.roy.trb.tst.credit.line.constants.BusinessRulesRatios.MAX_NUMBER_OF_FAILED_ATTEMPTS;
+import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
-import static org.roy.trb.tst.credit.line.enums.FoundingType.SME;
-import static org.roy.trb.tst.credit.line.enums.FoundingType.STARTUP;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,7 +11,6 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecord;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
@@ -27,10 +24,7 @@ import org.roy.trb.tst.credit.line.repositories.CreditLineRequestRepository;
 import org.roy.trb.tst.credit.line.services.mappers.CreditLineRequestMapper;
 import org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStatusStrategy;
 import org.roy.trb.tst.credit.line.services.strategies.founding.type.FoundingTypeStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.founding.type.SmeRequesterStrategy;
-import org.roy.trb.tst.credit.line.services.strategies.founding.type.StartUpRequesterStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -38,17 +32,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CreditLineServiceImpl implements CreditLineService {
 
+  // Dependency Injection
   private final CreditLineRequestMapper mapper;
   private final CreditLineRequestRepository creditLineRequestsRepository;
 
-  @Setter
-  @Value("${ratio.monthly-revenue}")
-  private Integer monthlyRevenueRatio;
-
-  @Setter
-  @Value("${ratio.cash-balance}")
-  private Integer cashBalanceRatio;
-
+  // Strategies
   private FoundingTypeStrategy foundingTypeStrategy;
   private CreditRequestStatusStrategy creditRequestStatusStrategy;
 
@@ -179,28 +167,6 @@ public class CreditLineServiceImpl implements CreditLineService {
         requestedDate);
 
     return existentCreditLineResponse;
-  }
-
-  /**
-   * Set up the credit line validation logic based on the Strategy design pattern. Select the
-   * strategy based on the founding type
-   *
-   * @param foundingType strategy selector
-   */
-  private void setFoundingTypeStrategy(FoundingType foundingType) {
-
-    if (SME.equals(foundingType)) {
-      foundingTypeStrategy =
-          SmeRequesterStrategy.builder().monthlyRevenueRatio(monthlyRevenueRatio).build();
-    }
-
-    if (STARTUP.equals(foundingType)) {
-      foundingTypeStrategy =
-          StartUpRequesterStrategy.builder()
-              .cashBalanceRatio(cashBalanceRatio)
-              .monthlyRevenueRatio(monthlyRevenueRatio)
-              .build();
-    }
   }
 
   /**

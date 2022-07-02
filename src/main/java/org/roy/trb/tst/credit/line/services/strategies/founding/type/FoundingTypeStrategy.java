@@ -1,7 +1,7 @@
 package org.roy.trb.tst.credit.line.services.strategies.founding.type;
 
-import static org.roy.trb.tst.credit.line.constants.BusinessRulesRatios.CASH_BALANCE_RATIO;
-import static org.roy.trb.tst.credit.line.constants.BusinessRulesRatios.MONTHLY_REVENUE_RATIO;
+import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.CASH_BALANCE_RATIO;
+import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.SME;
 import static org.roy.trb.tst.credit.line.enums.FoundingType.STARTUP;
 
@@ -13,6 +13,12 @@ import org.roy.trb.tst.credit.line.models.dtos.RequesterFinancialData;
 
 public interface FoundingTypeStrategy {
 
+  /**
+   * Set up the credit line validation logic based on the Strategy design pattern. Select the
+   * strategy based on the founding type
+   *
+   * @param foundingType strategy selector
+   */
   static FoundingTypeStrategy getFoundingTypeStrategy(FoundingType foundingType) {
 
     if (SME.equals(foundingType)) {

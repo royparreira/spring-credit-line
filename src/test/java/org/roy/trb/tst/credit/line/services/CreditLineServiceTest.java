@@ -6,15 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static org.roy.trb.tst.credit.line.constants.BusinessRulesRatios.MAX_NUMBER_OF_FAILED_ATTEMPTS;
+import static org.roy.trb.tst.credit.line.configs.BusinessRulesConfig.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.ACCEPTED;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyAcceptedRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyRejectedRequest;
-import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.CASH_BALANCE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_UUID_CUSTOMER_ID;
-import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MONTHLY_REVENUE_RATIO;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeAcceptableRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockSmeRejectableRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.mockStartURejectableRequest;
@@ -25,7 +23,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -66,12 +63,6 @@ class CreditLineServiceTest {
 
   private static Stream<Arguments> getMixCreditLineRequests() {
     return Stream.concat(getAcceptableCreditLineRequests(), getRejectableCreditLineRequests());
-  }
-
-  @BeforeEach
-  void setUpIndividualMocks() {
-    creditLineService.setCashBalanceRatio(CASH_BALANCE_RATIO);
-    creditLineService.setMonthlyRevenueRatio(MONTHLY_REVENUE_RATIO);
   }
 
   @ParameterizedTest
