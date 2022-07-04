@@ -1,6 +1,7 @@
 package org.roy.trb.tst.credit.line.controller;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.roy.trb.tst.credit.line.constants.ApiEndpoints.REQUEST_CREDIT_LINE_ENDPOINT;
@@ -17,16 +18,16 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.roy.trb.tst.credit.line.controllers.CreditLineController;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
+import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.exceptions.TooManyRequestsException;
 import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
-import org.roy.trb.tst.credit.line.services.RateLimiterService;
+import org.roy.trb.tst.credit.line.services.RateLimitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,15 +47,14 @@ class CreditLineControllerTest {
   public static final String MOCK_MSG = "MOCK";
   private static final String APPROVED_CREDIT_LINE = "10000";
   @MockBean private CreditLineService creditLineService;
-  @MockBean private RateLimiterService rateLimiterService;
-
+  @MockBean private RateLimitService rateLimitService;
   @Autowired private ObjectMapper objectMapper;
   @Autowired private MockMvc mockMvc;
 
   @Test
   void shouldAcceptCreditLineRequest() throws Exception {
 
-    mockAllowedRateLimit();
+    mockRateLimitNotReached();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenReturn(
@@ -78,7 +78,7 @@ class CreditLineControllerTest {
   @Test
   void shouldRejectCreditNewLineRequest() throws Exception {
 
-    mockAllowedRateLimit();
+    mockRateLimitNotReached();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException());
@@ -99,7 +99,7 @@ class CreditLineControllerTest {
   @Test
   void shouldRejectCreditLineRequestMoreThanThreeFails() throws Exception {
 
-    mockAllowedRateLimit();
+    mockRateLimitNotReached();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException(SALES_AGENT_MSG));
@@ -120,7 +120,7 @@ class CreditLineControllerTest {
   @Test
   void shouldResponseBadRequestForMissingRequiredHeader() throws Exception {
 
-    mockAllowedRateLimit();
+    mockRateLimitNotReached();
     MockHttpServletRequestBuilder builder =
         getBasePostHttpRequestBuilder()
             .headers(
@@ -137,7 +137,7 @@ class CreditLineControllerTest {
   @Test
   void shouldResponseBadRequestForMismatchFoundingType() throws Exception {
 
-    mockAllowedRateLimit();
+    mockRateLimitNotReached();
     MockHttpServletRequestBuilder builder =
         getBasePostHttpRequestBuilder()
             .headers(
@@ -154,7 +154,7 @@ class CreditLineControllerTest {
   @Test
   void shouldResponseInternalServerErrorForGeneralExceptions() throws Exception {
 
-    mockAllowedRateLimit();
+    mockRateLimitNotReached();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RuntimeException());
@@ -168,8 +168,8 @@ class CreditLineControllerTest {
   void shouldThrowTooManyRequestsWhenReachApiRateLimit() throws Exception {
 
     doThrow(new TooManyRequestsException())
-        .when(rateLimiterService)
-        .checkRateLimit(any(UUID.class));
+        .when(rateLimitService)
+        .checkRateLimitFor(any(UUID.class));
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
 
@@ -180,8 +180,8 @@ class CreditLineControllerTest {
   void shouldThrowInternalServerErrorExceptionWhenReachApiRateLimit() throws Exception {
 
     doThrow(new InternalServerErrorException("MOCK"))
-        .when(rateLimiterService)
-        .checkRateLimit(any(UUID.class));
+        .when(rateLimitService)
+        .checkRateLimitFor(any(UUID.class));
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
 
@@ -194,8 +194,9 @@ class CreditLineControllerTest {
     doThrow(
             new HttpMessageNotReadableException(
                 MOCK_MSG, new MockHttpInputMessage(MOCK_MSG.getBytes())))
-        .when(rateLimiterService)
-        .checkRateLimit(any(UUID.class));
+        .when(creditLineService)
+        .requestCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any(FoundingType.class));
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
 
@@ -227,7 +228,7 @@ class CreditLineControllerTest {
         .andExpect(jsonPath("$.response").doesNotExist());
   }
 
-  private void mockAllowedRateLimit() {
-    Mockito.doNothing().when(rateLimiterService).checkRateLimit(any(UUID.class));
+  private void mockRateLimitNotReached() {
+    doNothing().when(rateLimitService).checkRateLimitFor(any(UUID.class));
   }
 }

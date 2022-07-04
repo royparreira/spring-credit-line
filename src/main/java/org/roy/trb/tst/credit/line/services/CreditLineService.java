@@ -1,9 +1,7 @@
 package org.roy.trb.tst.credit.line.services;
 
 import java.util.UUID;
-import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
-import org.roy.trb.tst.credit.line.models.daos.CreditLineRequestRecordDao;
 import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 
@@ -19,20 +17,4 @@ public interface CreditLineService {
       UUID customerId,
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType);
-
-  /**
-   * Get the credit line status for a given costumer.
-   *
-   * @param customerId id of the customer
-   * @return The customer credit line status. If it's a new request it'll be considered as rejected.
-   */
-  CreditLineStatus getCustomerCreditLineStatus(UUID customerId);
-
-  /**
-   * Check if the user with the given customerId has already made any credit line request
-   *
-   * @param customerId query filter
-   * @return status of the request
-   */
-  CreditLineRequestRecordDao getLastCreditLineRecord(UUID customerId);
 }

@@ -25,15 +25,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // Cache
-    implementation 'org.redisson:redisson-spring-boot-starter:3.17.3'
-    implementation 'javax.cache:cache-api:1.1.1'
-    implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:2.1.0'
-    implementation 'com.github.vladimir-bukhtoyarov:bucket4j-jcache:2.1.0'
-
-
     // DB Postgres
     runtimeOnly 'org.postgresql:postgresql'
+
+    // Cache
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -84,7 +80,6 @@ jacocoTestCoverageVerification {
                     'org.roy.trb.tst.credit.line.constants.*',
                     'org.roy.trb.tst.credit.line.configs.*',
                     'org.roy.trb.tst.credit.line.services.mappers.*',
-                    'org.roy.trb.tst.credit.line.services.RateLimiterServiceImpl',
                     'org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStrategy',
                     'org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy',
                     'org.roy.trb.tst.credit.line.TrbTstCreditLineServiceApplication'
@@ -101,7 +96,6 @@ sonarqube {
                         '**/org/roy/trb/tst/credit/line/constants/**, ' +
                         '**/org/roy/trb/tst/credit/line/configs/**, ' +
                         '**/org/roy/trb/tst/credit/line/services/mappers/**, ' +
-                        '**/org/roy/trb/tst/credit/line/services/RateLimiterServiceImpl.java, ' +
                         '**/org/roy/trb/tst/credit/line/services/strategies/credit/status/CreditRequestStrategy.java, ' +
                         '**/org/roy/trb/tst/credit/line/services/strategies/founding/type/CreditLineCalculationStrategy.java, ' +
                         '**/org/roy/trb/tst/credit/line/TrbTstCreditLineServiceApplication.java'

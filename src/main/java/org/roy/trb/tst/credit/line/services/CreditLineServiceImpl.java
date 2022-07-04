@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.roy.trb.tst.credit.line.entities.CreditLineRequestRecord;
-import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
 import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
 import org.roy.trb.tst.credit.line.models.daos.CreditLineRequestRecordDao;
@@ -31,6 +30,7 @@ public class CreditLineServiceImpl implements CreditLineService {
   // Dependency Injection
   private final CreditLineRequestMapper mapper;
   private final CreditLineRequestRepository creditLineRequestsRepository;
+  private final RateLimitService rateLimitService;
 
   /** {@inheritDoc} */
   @Override
@@ -60,9 +60,13 @@ public class CreditLineServiceImpl implements CreditLineService {
     return getThePostRequestCreditLineResponseBody(processedCreditLineRequest);
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public CreditLineRequestRecordDao getLastCreditLineRecord(UUID customerId) {
+  /**
+   * Check if the user with the given customerId has already made any credit line request
+   *
+   * @param customerId query filter
+   * @return status of the request
+   */
+  private CreditLineRequestRecordDao getLastCreditLineRecord(UUID customerId) {
 
     return mapper.mapToCreditLineRequestRecordDao(
         creditLineRequestsRepository
@@ -75,10 +79,18 @@ public class CreditLineServiceImpl implements CreditLineService {
                     .build()));
   }
 
+  /**
+   * Get the api response body based on the status of the processed credit line request
+   *
+   * @param processedCreditLineRequest process credit line request
+   * @return api response body
+   */
   private PostRequestCreditLineResponseBody getThePostRequestCreditLineResponseBody(
       CreditLineRequestRecordDao processedCreditLineRequest) {
 
     if (REJECTED.equals(processedCreditLineRequest.getCreditLineStatus())) {
+
+      rateLimitService.setRateLimitForRejectedCredit(processedCreditLineRequest.getCustomerId());
 
       String rejectedCreditLineMessage =
           processedCreditLineRequest.getAttempts() > MAX_NUMBER_OF_FAILED_ATTEMPTS
@@ -88,18 +100,8 @@ public class CreditLineServiceImpl implements CreditLineService {
       throw new RejectedCreditLineException(rejectedCreditLineMessage);
     }
 
+    rateLimitService.setRateLimitForAcceptedCredit(processedCreditLineRequest.getCustomerId());
+
     return mapper.mapToRequestCreditLineResponseBody(processedCreditLineRequest);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public CreditLineStatus getCustomerCreditLineStatus(UUID customerId) {
-
-    CreditLineRequestRecord entity =
-        creditLineRequestsRepository
-            .findById(customerId)
-            .orElse(CreditLineRequestRecord.builder().creditLineStatus(REJECTED.name()).build());
-
-    return CreditLineStatus.valueOf(entity.getCreditLineStatus());
   }
 }
