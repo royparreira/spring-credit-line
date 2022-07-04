@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service;
 public class RateLimitServiceImpl implements RateLimitService {
   private final RedisTemplate<String, Integer> redisTemplate;
 
+  public static String keyOf(CreditLineStatus status, UUID customerId) {
+    return String.format("%s-%s", status.name(), customerId.toString());
+  }
+
   @Override
   public void setRateLimitForAcceptedCredit(UUID customerId) {
     redisTemplate.opsForValue().setIfAbsent(keyOf(ACCEPTED, customerId), 1, Duration.ofMinutes(2));
@@ -50,9 +54,5 @@ public class RateLimitServiceImpl implements RateLimitService {
       }
       redisTemplate.opsForValue().increment(keyOf(ACCEPTED, customerId));
     }
-  }
-
-  private String keyOf(CreditLineStatus status, UUID customerId) {
-    return String.format("%s-%s", status.name(), customerId.toString());
   }
 }

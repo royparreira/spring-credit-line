@@ -30,7 +30,7 @@ dependencies {
 
     // Cache
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -80,7 +80,6 @@ jacocoTestCoverageVerification {
                     'org.roy.trb.tst.credit.line.constants.*',
                     'org.roy.trb.tst.credit.line.configs.*',
                     'org.roy.trb.tst.credit.line.services.mappers.*',
-                    'org.roy.trb.tst.credit.line.services.RateLimiterServiceImpl',
                     'org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStrategy',
                     'org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy',
                     'org.roy.trb.tst.credit.line.TrbTstCreditLineServiceApplication'
@@ -97,7 +96,6 @@ sonarqube {
                         '**/org/roy/trb/tst/credit/line/constants/**, ' +
                         '**/org/roy/trb/tst/credit/line/configs/**, ' +
                         '**/org/roy/trb/tst/credit/line/services/mappers/**, ' +
-                        '**/org/roy/trb/tst/credit/line/services/RateLimiterServiceImpl.java, ' +
                         '**/org/roy/trb/tst/credit/line/services/strategies/credit/status/CreditRequestStrategy.java, ' +
                         '**/org/roy/trb/tst/credit/line/services/strategies/founding/type/CreditLineCalculationStrategy.java, ' +
                         '**/org/roy/trb/tst/credit/line/TrbTstCreditLineServiceApplication.java'

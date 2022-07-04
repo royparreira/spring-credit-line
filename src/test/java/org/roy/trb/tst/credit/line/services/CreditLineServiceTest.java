@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.lenient;
 import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
@@ -43,6 +44,7 @@ class CreditLineServiceTest {
   @InjectMocks private CreditLineServiceImpl creditLineService;
   @Spy private CreditLineRequestMapper mapper = Mappers.getMapper(CreditLineRequestMapper.class);
   @Mock private CreditLineRequestRepository creditLineRequestsRepository;
+  @Mock private RateLimitService rateLimitService;
 
   private static Stream<Arguments> getAcceptableCreditLineRequests() {
 
@@ -76,6 +78,8 @@ class CreditLineServiceTest {
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(Optional.empty());
 
+    doNothing().when(rateLimitService).setRateLimitForAcceptedCredit(any(UUID.class));
+
     // act
     PostRequestCreditLineResponseBody acceptedCreditLine =
         creditLineService.requestCreditLine(
@@ -97,6 +101,8 @@ class CreditLineServiceTest {
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(Optional.empty());
 
+    doNothing().when(rateLimitService).setRateLimitForRejectedCredit(any(UUID.class));
+
     // act and expect
     assertThrows(
         RejectedCreditLineException.class,
@@ -111,15 +117,20 @@ class CreditLineServiceTest {
   void shouldAcceptAlreadyAcceptedCreditLineRequestWithSameValuesRegardlessTheInput(
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType) {
+
     // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyAcceptedRequest());
 
+    doNothing().when(rateLimitService).setRateLimitForAcceptedCredit(any(UUID.class));
+
+    // act
     PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
         creditLineService.requestCreditLine(
             MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
+    // expect
     assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
     assertEquals(
         new BigDecimal("10000.00"), postRequestCreditLineResponseBody.getAcceptedCreditLine());
@@ -132,14 +143,19 @@ class CreditLineServiceTest {
       PostRequestCreditLineRequestBody postRequestCreditLineRequestBody,
       FoundingType foundingType) {
 
+    // given
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS));
 
+    doNothing().when(rateLimitService).setRateLimitForAcceptedCredit(any(UUID.class));
+
+    // act
     PostRequestCreditLineResponseBody postRequestCreditLineResponseBody =
         creditLineService.requestCreditLine(
             MOCKED_UUID_CUSTOMER_ID, postRequestCreditLineRequestBody, foundingType);
 
+    // expect
     assertEquals(ACCEPTED, postRequestCreditLineResponseBody.getCreditLineStatus());
   }
 
@@ -178,6 +194,8 @@ class CreditLineServiceTest {
     lenient()
         .when(creditLineRequestsRepository.findById(any(UUID.class)))
         .thenReturn(mockAlreadyRejectedRequest(MAX_NUMBER_OF_FAILED_ATTEMPTS - 1));
+
+    doNothing().when(rateLimitService).setRateLimitForRejectedCredit(any(UUID.class));
 
     // act
     RejectedCreditLineException exception =
