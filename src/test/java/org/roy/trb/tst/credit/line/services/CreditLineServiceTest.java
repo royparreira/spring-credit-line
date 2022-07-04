@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 import static org.roy.trb.tst.credit.line.constants.BusinessRulesConstants.MAX_NUMBER_OF_FAILED_ATTEMPTS;
 import static org.roy.trb.tst.credit.line.constants.Messages.SALES_AGENT_MSG;
 import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.ACCEPTED;
-import static org.roy.trb.tst.credit.line.enums.CreditLineStatus.REJECTED;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyAcceptedRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineEntityFixture.mockAlreadyRejectedRequest;
 import static org.roy.trb.tst.credit.line.fixture.CreditLineRequestFixture.MOCKED_UUID_CUSTOMER_ID;
@@ -23,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -192,22 +189,5 @@ class CreditLineServiceTest {
 
     // expect
     assertTrue(exception.getCustomMessage().isEmpty());
-  }
-
-  @Test
-  void shouldSuccessfullyGetCustomerCreditLineStatusByIdExistentUser() {
-
-    when(creditLineRequestsRepository.findById(any(UUID.class)))
-        .thenReturn(mockAlreadyAcceptedRequest());
-
-    assertEquals(ACCEPTED, creditLineService.getCustomerCreditLineStatus(MOCKED_UUID_CUSTOMER_ID));
-  }
-
-  @Test
-  void shouldSuccessfullyGetCustomerCreditLineStatusByIdNewUser() {
-
-    when(creditLineRequestsRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-
-    assertEquals(REJECTED, creditLineService.getCustomerCreditLineStatus(MOCKED_UUID_CUSTOMER_ID));
   }
 }

@@ -15,8 +15,8 @@ import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.ContractResponse;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
-import org.roy.trb.tst.credit.line.services.CacheService;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
+import org.roy.trb.tst.credit.line.services.RateLimitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CreditLineController implements CreditLineApi {
 
   private final CreditLineService creditLineService;
-  private final CacheService cacheService;
+  private final RateLimitService rateLimitService;
 
   @Override
   @PostMapping(
@@ -53,7 +53,7 @@ public class CreditLineController implements CreditLineApi {
         "Initializing credit line request validation. Request {}",
         postRequestCreditLineRequestBody.toString());
 
-    cacheService.checkRejectedCreditCache(customerId);
+    rateLimitService.checkRateLimitFor(customerId);
 
     return log.traceExit(
         ContractResponse.<PostRequestCreditLineResponseBody>builder()
