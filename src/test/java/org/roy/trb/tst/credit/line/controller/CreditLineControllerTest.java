@@ -17,16 +17,13 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.roy.trb.tst.credit.line.controllers.CreditLineController;
 import org.roy.trb.tst.credit.line.enums.CreditLineStatus;
-import org.roy.trb.tst.credit.line.exceptions.InternalServerErrorException;
+import org.roy.trb.tst.credit.line.enums.FoundingType;
 import org.roy.trb.tst.credit.line.exceptions.RejectedCreditLineException;
-import org.roy.trb.tst.credit.line.exceptions.TooManyRequestsException;
 import org.roy.trb.tst.credit.line.models.requests.PostRequestCreditLineRequestBody;
 import org.roy.trb.tst.credit.line.models.responses.PostRequestCreditLineResponseBody;
 import org.roy.trb.tst.credit.line.services.CreditLineService;
-import org.roy.trb.tst.credit.line.services.RateLimiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,15 +43,12 @@ class CreditLineControllerTest {
   public static final String MOCK_MSG = "MOCK";
   private static final String APPROVED_CREDIT_LINE = "10000";
   @MockBean private CreditLineService creditLineService;
-  @MockBean private RateLimiterService rateLimiterService;
-
   @Autowired private ObjectMapper objectMapper;
   @Autowired private MockMvc mockMvc;
 
   @Test
   void shouldAcceptCreditLineRequest() throws Exception {
 
-    mockAllowedRateLimit();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenReturn(
@@ -78,7 +72,6 @@ class CreditLineControllerTest {
   @Test
   void shouldRejectCreditNewLineRequest() throws Exception {
 
-    mockAllowedRateLimit();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException());
@@ -99,7 +92,6 @@ class CreditLineControllerTest {
   @Test
   void shouldRejectCreditLineRequestMoreThanThreeFails() throws Exception {
 
-    mockAllowedRateLimit();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RejectedCreditLineException(SALES_AGENT_MSG));
@@ -120,7 +112,6 @@ class CreditLineControllerTest {
   @Test
   void shouldResponseBadRequestForMissingRequiredHeader() throws Exception {
 
-    mockAllowedRateLimit();
     MockHttpServletRequestBuilder builder =
         getBasePostHttpRequestBuilder()
             .headers(
@@ -137,7 +128,6 @@ class CreditLineControllerTest {
   @Test
   void shouldResponseBadRequestForMismatchFoundingType() throws Exception {
 
-    mockAllowedRateLimit();
     MockHttpServletRequestBuilder builder =
         getBasePostHttpRequestBuilder()
             .headers(
@@ -154,7 +144,6 @@ class CreditLineControllerTest {
   @Test
   void shouldResponseInternalServerErrorForGeneralExceptions() throws Exception {
 
-    mockAllowedRateLimit();
     when(creditLineService.requestCreditLine(
             any(UUID.class), any(PostRequestCreditLineRequestBody.class), any()))
         .thenThrow(new RuntimeException());
@@ -163,30 +152,30 @@ class CreditLineControllerTest {
 
     assertErrorResponse(mockMvc.perform(builder).andExpect(status().isInternalServerError()));
   }
-
-  @Test
-  void shouldThrowTooManyRequestsWhenReachApiRateLimit() throws Exception {
-
-    doThrow(new TooManyRequestsException())
-        .when(rateLimiterService)
-        .checkRateLimit(any(UUID.class));
-
-    MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
-
-    assertErrorResponse(mockMvc.perform(builder).andExpect(status().isTooManyRequests()));
-  }
-
-  @Test
-  void shouldThrowInternalServerErrorExceptionWhenReachApiRateLimit() throws Exception {
-
-    doThrow(new InternalServerErrorException("MOCK"))
-        .when(rateLimiterService)
-        .checkRateLimit(any(UUID.class));
-
-    MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
-
-    assertErrorResponse(mockMvc.perform(builder).andExpect(status().isInternalServerError()));
-  }
+  //
+  //  @Test
+  //  void shouldThrowTooManyRequestsWhenReachApiRateLimit() throws Exception {
+  //
+  //    doThrow(new TooManyRequestsException())
+  //        .when(rateLimiterService)
+  //        .checkRateLimit(any(UUID.class));
+  //
+  //    MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
+  //
+  //    assertErrorResponse(mockMvc.perform(builder).andExpect(status().isTooManyRequests()));
+  //  }
+  //
+  //  @Test
+  //  void shouldThrowInternalServerErrorExceptionWhenReachApiRateLimit() throws Exception {
+  //
+  //    doThrow(new InternalServerErrorException("MOCK"))
+  //        .when(rateLimiterService)
+  //        .checkRateLimit(any(UUID.class));
+  //
+  //    MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
+  //
+  //    assertErrorResponse(mockMvc.perform(builder).andExpect(status().isInternalServerError()));
+  //  }
 
   @Test
   void shouldRespondBadRequestWhenHttpMessageNotReadableExceptionIsThrown() throws Exception {
@@ -194,8 +183,9 @@ class CreditLineControllerTest {
     doThrow(
             new HttpMessageNotReadableException(
                 MOCK_MSG, new MockHttpInputMessage(MOCK_MSG.getBytes())))
-        .when(rateLimiterService)
-        .checkRateLimit(any(UUID.class));
+        .when(creditLineService)
+        .requestCreditLine(
+            any(UUID.class), any(PostRequestCreditLineRequestBody.class), any(FoundingType.class));
 
     MockHttpServletRequestBuilder builder = getStartUpRequestTemplate();
 
@@ -225,9 +215,5 @@ class CreditLineControllerTest {
     performHttpCall
         .andExpect(jsonPath("$.error").exists())
         .andExpect(jsonPath("$.response").doesNotExist());
-  }
-
-  private void mockAllowedRateLimit() {
-    Mockito.doNothing().when(rateLimiterService).checkRateLimit(any(UUID.class));
   }
 }

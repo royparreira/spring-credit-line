@@ -31,6 +31,7 @@ public class CreditLineServiceImpl implements CreditLineService {
   // Dependency Injection
   private final CreditLineRequestMapper mapper;
   private final CreditLineRequestRepository creditLineRequestsRepository;
+  private final CacheService cacheService;
 
   /** {@inheritDoc} */
   @Override
@@ -77,6 +78,8 @@ public class CreditLineServiceImpl implements CreditLineService {
 
   private PostRequestCreditLineResponseBody getThePostRequestCreditLineResponseBody(
       CreditLineRequestRecordDao processedCreditLineRequest) {
+
+    cacheService.cacheTheRejectedCredit(processedCreditLineRequest.getCustomerId());
 
     if (REJECTED.equals(processedCreditLineRequest.getCreditLineStatus())) {
 
