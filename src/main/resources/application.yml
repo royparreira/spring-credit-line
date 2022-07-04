@@ -1,0 +1,46 @@
+server:
+  port: 5001
+  servlet.context-path: /credit-line
+
+springdoc:
+  api-docs:
+    path: /api-docs
+
+  swagger-ui:
+    path: /swagger
+
+logging:
+  level:
+    root: INFO
+
+ratio:
+  cash-balance: 3
+  monthly-revenue: 5
+  max-failed-attempts: 3
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credit-line-service-db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    testWhileIdle: true
+    validationQuery: SELECT 1
+
+  # Note these configurations are only for local environment
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+
+  main:
+    allow-bean-definition-overriding: true

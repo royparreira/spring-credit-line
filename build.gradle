@@ -1,0 +1,118 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "org.sonarqube" version "3.4.0.2513"
+    id 'jacoco'
+}
+
+group = 'org.roy'
+version = '0.0.1'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // DB Postgres
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Cache
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+
+    // Documentation
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.4'
+
+    // Logging
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+
+
+    // Dev Dependencies
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+    dependsOn test
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                minimum = 1.0
+            }
+            excludes = [
+                    'org.roy.trb.tst.credit.line.models.*',
+                    'org.roy.trb.tst.credit.line.enums.*',
+                    'org.roy.trb.tst.credit.line.constants.*',
+                    'org.roy.trb.tst.credit.line.configs.*',
+                    'org.roy.trb.tst.credit.line.services.mappers.*',
+                    'org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStrategy',
+                    'org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy',
+                    'org.roy.trb.tst.credit.line.TrbTstCreditLineServiceApplication'
+            ]
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.coverage.exclusions',
+                '**/org/roy/trb/tst/credit/line/models/**, ' +
+                        '**/org/roy/trb/tst/credit/line/enums/**, ' +
+                        '**/org/roy/trb/tst/credit/line/constants/**, ' +
+                        '**/org/roy/trb/tst/credit/line/configs/**, ' +
+                        '**/org/roy/trb/tst/credit/line/services/mappers/**, ' +
+                        '**/org/roy/trb/tst/credit/line/services/strategies/credit/status/CreditRequestStrategy.java, ' +
+                        '**/org/roy/trb/tst/credit/line/services/strategies/founding/type/CreditLineCalculationStrategy.java, ' +
+                        '**/org/roy/trb/tst/credit/line/TrbTstCreditLineServiceApplication.java'
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport
+    testLogging {
+        events "failed", "skipped", "passed"
+    }
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('sonarqube').configure {
+    dependsOn jacocoTestReport
+    dependsOn jacocoTestCoverageVerification
+}
