@@ -1,4 +1,4 @@
-# trb-tst-credit-line-service
+# spring-credit-line
 
 Java Spring Boot Micro-Service
 
