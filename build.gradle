@@ -1,14 +1,17 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.1'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
-    id "org.sonarqube" version "3.4.0.2513"
+    id "org.sonarqube" version "4.4.1.3373"
     id 'jacoco'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 group = 'org.roy'
 version = '0.0.1'
-sourceCompatibility = '11'
 
 configurations {
     compileOnly {
@@ -42,7 +45,7 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
 
     // Documentation
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.4'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
     // Logging
     implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
@@ -75,14 +78,14 @@ jacocoTestCoverageVerification {
                 minimum = 1.0
             }
             excludes = [
-                    'org.roy.trb.tst.credit.line.models.*',
-                    'org.roy.trb.tst.credit.line.enums.*',
-                    'org.roy.trb.tst.credit.line.constants.*',
-                    'org.roy.trb.tst.credit.line.configs.*',
-                    'org.roy.trb.tst.credit.line.services.mappers.*',
-                    'org.roy.trb.tst.credit.line.services.strategies.credit.status.CreditRequestStrategy',
-                    'org.roy.trb.tst.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy',
-                    'org.roy.trb.tst.credit.line.TrbTstCreditLineServiceApplication'
+                    'org.roy.credit.line.models.*',
+                    'org.roy.credit.line.enums.*',
+                    'org.roy.credit.line.constants.*',
+                    'org.roy.credit.line.configs.*',
+                    'org.roy.credit.line.services.mappers.*',
+                    'org.roy.credit.line.services.strategies.credit.status.CreditRequestStrategy',
+                    'org.roy.credit.line.services.strategies.founding.type.CreditLineCalculationStrategy',
+                    'org.roy.credit.line.TrbTstCreditLineServiceApplication'
             ]
         }
     }
@@ -91,14 +94,14 @@ jacocoTestCoverageVerification {
 sonarqube {
     properties {
         property 'sonar.coverage.exclusions',
-                '**/org/roy/trb/tst/credit/line/models/**, ' +
-                        '**/org/roy/trb/tst/credit/line/enums/**, ' +
-                        '**/org/roy/trb/tst/credit/line/constants/**, ' +
-                        '**/org/roy/trb/tst/credit/line/configs/**, ' +
-                        '**/org/roy/trb/tst/credit/line/services/mappers/**, ' +
-                        '**/org/roy/trb/tst/credit/line/services/strategies/credit/status/CreditRequestStrategy.java, ' +
-                        '**/org/roy/trb/tst/credit/line/services/strategies/founding/type/CreditLineCalculationStrategy.java, ' +
-                        '**/org/roy/trb/tst/credit/line/TrbTstCreditLineServiceApplication.java'
+                '**/org/roy/credit/line/models/**, ' +
+                        '**/org/roy/credit/line/enums/**, ' +
+                        '**/org/roy/credit/line/constants/**, ' +
+                        '**/org/roy/credit/line/configs/**, ' +
+                        '**/org/roy/credit/line/services/mappers/**, ' +
+                        '**/org/roy/credit/line/services/strategies/credit/status/CreditRequestStrategy.java, ' +
+                        '**/org/roy/credit/line/services/strategies/founding/type/CreditLineCalculationStrategy.java, ' +
+                        '**/org/roy/credit/line/TrbTstCreditLineServiceApplication.java'
     }
 }
 
